@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap');
+
+@theme {
+  --font-display: "Syne", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+
+  --color-surface-0: oklch(12% 0.025 260);
+  --color-surface-1: oklch(14% 0.028 260);
+  --color-surface-2: oklch(17% 0.032 260);
+  --color-surface-3: oklch(20% 0.036 260);
+  --color-surface-4: oklch(23% 0.040 260);
+  
+  --color-brand: oklch(55% 0.22 264);
+  --color-brand-light: oklch(62% 0.20 264);
+  --color-accent-cyan: oklch(75% 0.15 220);
+  
+  --color-text-1: oklch(95% 0.012 260);
+  --color-text-2: oklch(66% 0.022 255);
+  --color-text-3: oklch(45% 0.028 258);
+  --color-text-4: oklch(33% 0.022 258);
+  
+  --color-success: oklch(78% 0.15 160);
+  --color-warning: oklch(82% 0.16 75);
+  --color-danger: oklch(63% 0.23 25);
+
+  --radius-10: 10px;
+  --radius-14: 14px;
+  --radius-18: 18px;
+}
+
+:root {
+  --surface-0: oklch(12% 0.025 260);
+  --surface-1: oklch(14% 0.028 260);
+  --surface-2: oklch(17% 0.032 260);
+  --surface-3: oklch(20% 0.036 260);
+  --surface-4: oklch(23% 0.040 260);
+  --brand: oklch(55% 0.22 264);
+  --brand-light: oklch(62% 0.20 264);
+  --accent: oklch(75% 0.15 220);
+  --text-1: oklch(95% 0.012 260);
+  --text-2: oklch(66% 0.022 255);
+  --text-3: oklch(45% 0.028 258);
+  --text-4: oklch(33% 0.022 258);
+  --success: oklch(78% 0.15 160);
+  --warning: oklch(82% 0.16 75);
+  --danger: oklch(63% 0.23 25);
+}
+
+@layer base {
+  body {
+    @apply bg-surface-0 text-text-2 font-body antialiased;
+  }
+}
+
+@layer components {
+  .flowos-card {
+    @apply bg-surface-2 border border-white/[0.07] rounded-14 p-6 transition-all duration-150 hover:bg-surface-3 hover:border-white/[0.14];
+  }
+
+  .flowos-label {
+    @apply text-[10px] font-bold uppercase tracking-[1.5px] text-text-3;
+  }
+
+  .flowos-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white/[0.05] border border-white/[0.07] text-text-2;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-brand to-accent-cyan;
+  }
+
+  .grid-pattern {
+    background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  .flowos-shadcn-input {
+    @apply flex h-11 w-full rounded-10 border border-white/[0.07] bg-surface-2 px-3 py-2 text-sm text-text-1 ring-offset-surface-0 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-text-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-50 transition-all;
+  }
+
+  .flowos-shadcn-btn-primary {
+    @apply inline-flex items-center justify-center rounded-10 bg-brand px-4 py-2 text-sm font-display font-bold text-white transition-all hover:bg-brand-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 w-full;
+  }
+
+  .flowos-shadcn-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-10 border border-white/[0.07] bg-transparent px-4 py-2 text-sm font-display font-semibold text-text-1 transition-all hover:bg-surface-3 hover:border-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 w-full;
+  }
+
+  .input-wrapper {
+    @apply relative flex items-center;
+  }
+
+  .input-icon-left {
+    @apply absolute left-3 size-4 text-text-3;
+  }
+
+  .input-icon-right {
+    @apply absolute right-3 size-4 text-text-3 hover:text-text-2 cursor-pointer;
+  }
+
+  .flowos-shadcn-input.pl-icon {
+    @apply pl-10;
+  }
+
+  .flowos-shadcn-input.pr-icon {
+    @apply pr-10;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
