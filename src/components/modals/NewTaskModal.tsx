@@ -30,82 +30,85 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ open, onOpenChange }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[520px]">
-        <DialogHeader>
-          <DialogTitle>New task</DialogTitle>
+      <DialogContent className="max-w-[560px] p-0 overflow-hidden border-white/[0.07] bg-surface-1">
+        <DialogHeader className="px-6 pt-6 pb-0">
+          <DialogTitle className="text-[20px] font-display font-bold text-text-1">New Task</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          <div className="space-y-4">
+        <div className="px-6 py-6 space-y-8">
+          {/* Main Input Section */}
+          <div className="space-y-3">
             <input 
               autoFocus
               type="text" 
               placeholder="What needs to be done?" 
-              className="flowos-shadcn-input h-12 text-[16px] font-medium"
+              className="w-full bg-transparent border-none outline-none text-[22px] font-display font-bold text-text-1 placeholder:text-text-4 tracking-tight"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <textarea 
               placeholder="Add details, links, or context..." 
-              className="flowos-shadcn-input min-h-[80px] text-sm resize-none"
+              className="w-full bg-transparent border-none outline-none text-[14px] text-text-2 placeholder:text-text-4 resize-none min-h-[60px] leading-relaxed"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="flowos-label">Project</label>
+          {/* Metadata Grid */}
+          <div className="grid grid-cols-2 gap-x-10 gap-y-6 pt-6 border-t border-white/[0.05]">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Project</label>
               <Select value={project} onValueChange={setProject}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 bg-surface-2 border-white/[0.07] hover:bg-surface-3 transition-colors">
                   <SelectValue placeholder="Inbox" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="inbox">
-                    <div className="flex items-center gap-2">
-                      <FolderOpen size={14} className="text-text-4" /> Inbox
+                    <div className="flex items-center gap-2.5">
+                      <FolderOpen size={14} className="text-brand" /> 
+                      <span className="text-[13px] font-medium">Inbox</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="work">
-                    <div className="flex items-center gap-2">
-                      <div className="size-2 rounded-full bg-brand" /> Work Project
+                    <div className="flex items-center gap-2.5">
+                      <div className="size-2 rounded-full bg-danger" /> 
+                      <span className="text-[13px] font-medium">Work Project</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="personal">
-                    <div className="flex items-center gap-2">
-                      <div className="size-2 rounded-full bg-success" /> Personal
+                    <div className="flex items-center gap-2.5">
+                      <div className="size-2 rounded-full bg-success" /> 
+                      <span className="text-[13px] font-medium">Personal</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="flowos-label">Priority</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Priority</label>
               <Select value={priority} onValueChange={setPriority}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 bg-surface-2 border-white/[0.07] hover:bg-surface-3 transition-colors">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="p1"><div className="flex items-center gap-2"><div className="size-2 rounded-full bg-danger" /> P1 — Urgent</div></SelectItem>
-                  <SelectItem value="p2"><div className="flex items-center gap-2"><div className="size-2 rounded-full bg-warning" /> P2 — High</div></SelectItem>
-                  <SelectItem value="p3"><div className="flex items-center gap-2"><div className="size-2 rounded-full bg-brand" /> P3 — Medium</div></SelectItem>
-                  <SelectItem value="none"><div className="flex items-center gap-2">None</div></SelectItem>
+                  <SelectItem value="p1"><div className="flex items-center gap-2.5"><div className="size-2 rounded-full bg-danger" /> <span className="text-[13px] font-medium">P1 — Urgent</span></div></SelectItem>
+                  <SelectItem value="p2"><div className="flex items-center gap-2.5"><div className="size-2 rounded-full bg-warning" /> <span className="text-[13px] font-medium">P2 — High</span></div></SelectItem>
+                  <SelectItem value="p3"><div className="flex items-center gap-2.5"><div className="size-2 rounded-full bg-brand" /> <span className="text-[13px] font-medium">P3 — Medium</span></div></SelectItem>
+                  <SelectItem value="none"><div className="flex items-center gap-2.5"><span className="text-[13px] font-medium">None</span></div></SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="flowos-label">Due Date</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Due Date</label>
               <Popover>
                 <PopoverTrigger asChild>
                   <button className={cn(
-                    "flowos-shadcn-input flex items-center justify-start text-left font-normal",
+                    "flex h-10 w-full items-center gap-2.5 rounded-10 border border-white/[0.07] bg-surface-2 px-3 py-2 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-3 outline-none focus:ring-1 focus:ring-brand",
                     !date && "text-text-4"
                   )}>
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon size={14} className="text-text-4" />
                     {date ? format(date, "PPP") : <span>No due date</span>}
                   </button>
                 </PopoverTrigger>
@@ -120,36 +123,45 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ open, onOpenChange }
               </Popover>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="flowos-label">Estimate</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Estimate</label>
               <Select value={estimate} onValueChange={setEstimate}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 bg-surface-2 border-white/[0.07] hover:bg-surface-3 transition-colors">
                   <SelectValue placeholder="No estimate" />
                 </SelectTrigger>
                 <SelectContent>
                   {['15m', '30m', '1h', '2h', '4h', '1 day', '2 days'].map(e => (
-                    <SelectItem key={e} value={e}>{e}</SelectItem>
+                    <SelectItem key={e} value={e}><span className="text-[13px] font-medium">{e}</span></SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="flowos-label">Labels</label>
-            <div className="flowos-shadcn-input flex items-center gap-2 min-h-[40px] flex-wrap py-2">
-              <Tag size={14} className="text-text-4" />
-              <span className="text-text-4 text-sm">Add labels...</span>
-            </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Labels</label>
+            <button className="flex items-center gap-2.5 w-full h-10 bg-surface-2 border border-white/[0.07] rounded-10 px-3 hover:bg-surface-3 transition-colors text-text-4 group">
+              <Tag size={14} className="group-hover:text-text-2 transition-colors" />
+              <span className="text-[13px] font-medium group-hover:text-text-2 transition-colors">Add labels...</span>
+            </button>
           </div>
         </div>
 
-        <DialogFooter>
-          <div className="flex-1 flex items-center text-[12px] text-text-4">
-            Press ⌘↵ to save
+        <DialogFooter className="bg-surface-2/50 px-6 py-4 mt-0 border-t border-white/[0.07]">
+          <div className="flex-1 hidden sm:flex items-center text-[11px] font-medium text-text-4 uppercase tracking-wider">
+            ⌘ + Enter to save
           </div>
-          <button onClick={() => onOpenChange(false)} className="flowos-shadcn-btn-secondary w-auto px-6">Cancel</button>
-          <button className="flowos-shadcn-btn-primary w-auto px-6">Add Task</button>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button 
+              onClick={() => onOpenChange(false)} 
+              className="flex-1 sm:flex-none h-10 px-6 rounded-10 text-[13px] font-bold text-text-3 hover:text-text-1 hover:bg-white/5 transition-all"
+            >
+              Cancel
+            </button>
+            <button className="flex-1 sm:flex-none flowos-shadcn-btn-primary h-10 px-8 w-auto">
+              Create Task
+            </button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

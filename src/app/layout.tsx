@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from 'sonner';
-import "../index.css";
+import "@/src/app/globals.css";
 
 export const metadata: Metadata = {
   title: "FlowOS",

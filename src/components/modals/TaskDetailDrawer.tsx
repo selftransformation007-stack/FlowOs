@@ -116,32 +116,47 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ open, onOpen
             ))}
           </div>
 
-          <div className="space-y-4 border-t border-white/[0.07] pt-8">
+          <div className="space-y-6 border-t border-white/[0.07] pt-8">
             <div className="flex items-center justify-between">
-              <span className="flowos-label">Subtasks</span>
-              <span className="bg-surface-3 text-text-3 text-[10px] px-2 py-0.5 rounded-full font-bold">2/3</span>
+              <div className="flex items-center gap-3">
+                <span className="flowos-label">Subtasks</span>
+                <span className="bg-surface-3 text-text-3 text-[10px] px-2 py-0.5 rounded-full font-bold">2/3</span>
+              </div>
+              <button className="text-[11px] font-bold text-brand-light hover:underline uppercase tracking-wider">Add all</button>
             </div>
-            <div className="space-y-1">
+            
+            <div className="space-y-1 bg-surface-2/30 rounded-14 border border-white/[0.03] p-2">
               {subtasks.map(s => (
-                <div key={s.id} className="flex items-center gap-3 py-2 group">
+                <div key={s.id} className="flex items-center gap-4 px-3 py-2.5 rounded-10 hover:bg-white/[0.03] transition-all group">
                   <button className={cn(
                     "size-5 rounded-full border flex items-center justify-center transition-all shrink-0",
-                    s.done ? "bg-success border-success text-white" : "border-white/20 text-transparent hover:border-brand"
+                    s.done ? "bg-success border-success text-white shadow-[0_0_10px_rgba(120,255,158,0.2)]" : "border-white/20 text-transparent hover:border-brand"
                   )}>
                     <CheckCircle2 size={12} />
                   </button>
-                  <span className={cn("text-[13px] flex-1", s.done ? "text-text-4 line-through" : "text-text-1")}>{s.title}</span>
-                  <button className="opacity-0 group-hover:opacity-100 text-text-4 hover:text-danger transition-all">
-                    <Trash2 size={14} />
-                  </button>
+                  <span className={cn(
+                    "text-[13px] font-medium flex-1 transition-all", 
+                    s.done ? "text-text-4 line-through" : "text-text-1"
+                  )}>
+                    {s.title}
+                  </span>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button className="size-7 flex items-center justify-center rounded-full text-text-4 hover:text-text-2 hover:bg-white/5">
+                      <MoreHorizontal size={14} />
+                    </button>
+                    <button className="size-7 flex items-center justify-center rounded-full text-text-4 hover:text-danger hover:bg-danger/10">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               ))}
-              <div className="flex items-center gap-3 py-2">
-                <Plus size={16} className="text-text-4 shrink-0" />
+              
+              <div className="flex items-center gap-4 px-3 py-2.5">
+                <Plus size={16} className="text-brand shrink-0" />
                 <input 
                   type="text" 
                   placeholder="Add a subtask..." 
-                  className="bg-transparent border-none outline-none text-[13px] text-text-2 placeholder:text-text-4 w-full"
+                  className="bg-transparent border-none outline-none text-[13px] text-text-1 font-medium placeholder:text-text-4 w-full"
                 />
               </div>
             </div>
