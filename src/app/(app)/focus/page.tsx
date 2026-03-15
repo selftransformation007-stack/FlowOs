@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, CheckSquare, AlertCircle, Timer as TimerIcon, BarChart2, Flame } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
@@ -5,10 +7,10 @@ import { cn } from '@/src/lib/utils';
 import { FocusSettingsModal } from '@/src/components/modals/FocusSettingsModal';
 import { Settings } from 'lucide-react';
 
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { History } from 'lucide-react';
 
-export const FocusPage = () => {
+export default function FocusPage() {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
   const [sessionType, setSessionType] = useState<'focus' | 'short' | 'long'>('focus');
@@ -64,7 +66,7 @@ export const FocusPage = () => {
         {/* Settings & History Buttons */}
         <div className="absolute top-0 right-6 flex items-center gap-2">
           <Link 
-            to="/focus/history"
+            href="/focus/history"
             className="size-10 rounded-10 border border-white/[0.07] flex items-center justify-center text-text-4 hover:text-text-1 transition-all"
           >
             <History size={18} />

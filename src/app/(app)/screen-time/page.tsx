@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import { Monitor, ArrowUpRight, ArrowDownRight, Smartphone, Globe, MessageCircle, Play as PlayIcon, Briefcase, Plus, MoreHorizontal, Pencil } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
@@ -24,9 +26,9 @@ const appUsage = [
 
 import { SetScreenTimeLimitModal } from '@/src/components/modals/SetScreenTimeLimitModal';
 
-export const ScreenTimePage = () => {
-  const [isLimitModalOpen, setIsLimitModalOpen] = React.useState(false);
-  const [selectedApp, setSelectedApp] = React.useState<any>(null);
+export default function ScreenTimePage() {
+  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<any>(null);
 
   const handleSetLimit = (app?: any) => {
     setSelectedApp(app || null);

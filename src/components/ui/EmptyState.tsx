@@ -2,7 +2,7 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { Button } from '@/src/components/ui/Button';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -38,7 +38,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         )}
         {secondaryAction && (
           <Button asChild variant="ghost" className="h-9 px-4 text-[13px] text-text-2">
-            <Link to={secondaryAction.href}>{secondaryAction.label}</Link>
+            <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
           </Button>
         )}
       </div>

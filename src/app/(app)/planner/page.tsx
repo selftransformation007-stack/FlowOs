@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, CheckSquare, Flame, Video, Coffee, Zap } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
@@ -24,8 +26,8 @@ const BlockIcon = ({ type }: { type: string }) => {
 
 import { AddPlannerBlockModal } from '@/src/components/modals/AddPlannerBlockModal';
 
-export const PlannerPage = () => {
-  const [isAddBlockModalOpen, setIsAddBlockModalOpen] = React.useState(false);
+export default function PlannerPage() {
+  const [isAddBlockModalOpen, setIsAddBlockModalOpen] = useState(false);
 
   return (
     <div className="flex gap-8 h-full">

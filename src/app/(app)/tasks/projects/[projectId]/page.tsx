@@ -1,5 +1,6 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+"use client";
+
+import { useParams, useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   Pencil, 
@@ -17,7 +18,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/src/components/ui/DropdownMenu';
-import { TasksPage } from '@/src/app/(app)/tasks/page';
+import TasksPage from '@/src/app/(app)/tasks/page';
 
 const mockProject = {
   id: '1',
@@ -31,14 +32,15 @@ const mockProject = {
   pct: 75
 };
 
-export const ProjectDetailPage = () => {
-  const { projectId } = useParams();
-  const navigate = useNavigate();
+export default function ProjectDetailPage() {
+  const params = useParams();
+  const projectId = params?.projectId as string;
+  const router = useRouter();
 
   return (
     <div className="animate-fade-in pb-20">
       <button 
-        onClick={() => navigate('/tasks')}
+        onClick={() => router.push('/tasks')}
         className="flex items-center gap-1.5 text-[13px] text-text-3 hover:text-text-1 transition-colors mb-6"
       >
         <ChevronLeft size={16} />

@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Flame, 
@@ -34,13 +37,13 @@ const MORE_ITEMS = [
 ];
 
 export const MobileNav = () => {
-  const location = useLocation();
+  const pathname = usePathname();
   const [isMoreOpen, setIsMoreOpen] = React.useState(false);
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-16 bg-surface-1/95 backdrop-blur-md border-t border-white/[0.07] flex items-center justify-around px-2 pb-safe">
       {MOBILE_NAV_ITEMS.map((item) => {
-        const isActive = item.href ? location.pathname === item.href : false;
+        const isActive = item.href ? pathname === item.href : false;
         
         if (!item.href) {
           return (
@@ -60,9 +63,9 @@ export const MobileNav = () => {
                 
                 <div className="grid grid-cols-3 gap-3 px-6 pb-12">
                   {MORE_ITEMS.map((moreItem) => (
-                    <NavLink
+                    <Link
                       key={moreItem.href}
-                      to={moreItem.href}
+                      href={moreItem.href}
                       onClick={() => setIsMoreOpen(false)}
                       className="flex flex-col items-center gap-2 p-4 rounded-[16px] bg-surface-2 border border-white/[0.05] active:scale-95 transition-all"
                     >
@@ -70,7 +73,7 @@ export const MobileNav = () => {
                         <moreItem.icon size={20} />
                       </div>
                       <span className="text-[11px] font-bold text-text-2">{moreItem.label}</span>
-                    </NavLink>
+                    </Link>
                   ))}
                 </div>
               </SheetContent>
@@ -79,10 +82,10 @@ export const MobileNav = () => {
         }
 
         return (
-          <NavLink
+          <Link
             key={item.href}
-            to={item.href}
-            className={({ isActive }) => cn(
+            href={item.href}
+            className={cn(
               "flex flex-col items-center gap-1 px-4 py-2 relative transition-all",
               isActive ? "text-brand" : "text-text-3"
             )}
@@ -99,7 +102,7 @@ export const MobileNav = () => {
             {isActive && (
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-brand rounded-full" />
             )}
-          </NavLink>
+          </Link>
         );
       })}
     </nav>

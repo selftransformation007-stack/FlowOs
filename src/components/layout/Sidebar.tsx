@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Flame, 
@@ -35,7 +38,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onOpenShortcuts }) => {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
 
   const user = {
     name: "Arjun Singh",
@@ -56,9 +59,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenShortcuts }) => {
         {navItems.map((item) => {
           const isActive = pathname === item.route;
           return (
-            <NavLink
+            <Link
               key={item.route}
-              to={item.route}
+              href={item.route}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-[10px]",
                 "text-[13px] font-medium transition-colors duration-150",
@@ -74,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenShortcuts }) => {
                   {item.badge}
                 </span>
               )}
-            </NavLink>
+            </Link>
           );
         })}
       </nav>
@@ -94,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenShortcuts }) => {
         </button>
 
         <Link 
-          to="/settings"
+          href="/settings"
           className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] hover:bg-surface-3 cursor-pointer transition-colors group"
         >
           <div className="size-9 rounded-full bg-brand/20 flex items-center justify-center text-brand-light font-bold text-xs shrink-0 ring-2 ring-transparent group-hover:ring-brand/30 transition-all">

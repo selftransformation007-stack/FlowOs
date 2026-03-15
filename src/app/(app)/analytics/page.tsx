@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { BarChart2, TrendingUp, TrendingDown, ArrowUpRight, Calendar, Download, Sparkles, Flame, CheckCircle2, Timer, Monitor } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
@@ -36,9 +38,9 @@ const heatmapData = Array.from({ length: 52 }, (_, week) =>
   }))
 ).flat();
 
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
-export const AnalyticsPage = () => {
+export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -202,7 +204,7 @@ export const AnalyticsPage = () => {
               </div>
             </div>
           </div>
-          <Link to="/analytics/reports/1" className="flowos-shadcn-btn-primary mt-8 flex items-center justify-center">
+          <Link href="/analytics/reports/1" className="flowos-shadcn-btn-primary mt-8 flex items-center justify-center">
             View Full Report
           </Link>
         </div>

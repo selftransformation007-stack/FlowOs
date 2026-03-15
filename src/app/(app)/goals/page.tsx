@@ -1,6 +1,11 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import { Plus, Target, Calendar, CheckCircle2, MoreHorizontal, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import Link from 'next/link';
+import { NewGoalModal } from '@/src/components/modals/NewGoalModal';
+import { UpdateGoalProgressModal } from '@/src/components/modals/UpdateGoalProgressModal';
 
 const mockGoals = [
   { 
@@ -46,11 +51,6 @@ const mockGoals = [
   },
 ];
 
-import { NewGoalModal } from '@/src/components/modals/NewGoalModal';
-import { UpdateGoalProgressModal } from '@/src/components/modals/UpdateGoalProgressModal';
-
-import { Link } from 'react-router-dom';
-
 const GoalCard: React.FC<{ goal: any; onUpdate: () => void }> = ({ goal, onUpdate }) => (
   <div className="flowos-card group">
     <div className="flex items-start justify-between mb-6">
@@ -62,7 +62,7 @@ const GoalCard: React.FC<{ goal: any; onUpdate: () => void }> = ({ goal, onUpdat
           </span>
         </div>
         <h3 className="font-display text-[20px] font-bold text-text-1 group-hover:text-brand transition-colors mt-2">
-          <Link to={`/goals/${goal.id}`}>{goal.title}</Link>
+          <Link href={`/goals/${goal.id}`}>{goal.title}</Link>
         </h3>
       </div>
       <button className="text-text-4 hover:text-text-2 transition-colors">
@@ -128,7 +128,7 @@ const GoalCard: React.FC<{ goal: any; onUpdate: () => void }> = ({ goal, onUpdat
         Update Progress
       </button>
       <Link 
-        to={`/goals/${goal.id}`}
+        href={`/goals/${goal.id}`}
         className="flowos-shadcn-btn-secondary h-9 px-3 w-auto flex items-center justify-center"
       >
         Details
@@ -146,11 +146,11 @@ const GOAL_CATEGORIES = [
   { id: "PERSONAL",    emoji: "✨", label: "Personal"    },
 ];
 
-export const GoalsPage = () => {
-  const [isNewModalOpen, setIsNewModalOpen] = React.useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = React.useState(false);
-  const [selectedGoal, setSelectedGoal] = React.useState<any>(null);
-  const [activeTab, setActiveTab] = React.useState('all');
+export default function GoalsPage() {
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('all');
 
   const handleUpdateClick = (goal: any) => {
     setSelectedGoal(goal);
@@ -260,4 +260,4 @@ export const GoalsPage = () => {
       </div>
     </div>
   );
-};
+}

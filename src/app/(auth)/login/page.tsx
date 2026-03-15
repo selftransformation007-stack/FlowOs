@@ -1,10 +1,13 @@
+"use client";
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Github } from 'lucide-react';
 
-export const LoginPage = () => {
+export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div className="space-y-8">
@@ -26,7 +29,7 @@ export const LoginPage = () => {
           Sign In
         </button>
         <Link 
-          to="/register" 
+          href="/register" 
           className="flex-1 py-2 text-sm font-medium text-text-3 hover:text-text-2 text-center"
         >
           Create Account
@@ -71,7 +74,7 @@ export const LoginPage = () => {
           </div>
         </div>
 
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); navigate('/dashboard'); }}>
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
           <div className="space-y-1.5">
             <label className="text-[12px] font-medium text-text-2 ml-1">Email address</label>
             <div className="input-wrapper">
@@ -88,7 +91,7 @@ export const LoginPage = () => {
           <div className="space-y-1.5">
             <div className="flex justify-between items-center px-1">
               <label className="text-[12px] font-medium text-text-2">Password</label>
-              <Link to="/forgot-password" title="Forgot password" className="text-[11px] text-brand-light hover:underline">
+              <Link href="/forgot-password" title="Forgot password" className="text-[11px] text-brand-light hover:underline">
                 Forgot?
               </Link>
             </div>
@@ -119,10 +122,10 @@ export const LoginPage = () => {
 
       <p className="text-center text-[13px] text-text-3">
         Don't have an account?{' '}
-        <Link to="/register" className="text-brand-light hover:underline font-medium">
+        <Link href="/register" className="text-brand-light hover:underline font-medium">
           Create one for free
         </Link>
       </p>
     </div>
   );
-};
+}

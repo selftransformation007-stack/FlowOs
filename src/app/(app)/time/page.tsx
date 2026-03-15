@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import { Plus, Clock, Calendar, BarChart2, MoreHorizontal, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
@@ -11,8 +13,8 @@ const mockEntries = [
 
 import { LogTimeModal } from '@/src/components/modals/LogTimeModal';
 
-export const TimePage = () => {
-  const [isLogTimeModalOpen, setIsLogTimeModalOpen] = React.useState(false);
+export default function TimePage() {
+  const [isLogTimeModalOpen, setIsLogTimeModalOpen] = useState(false);
 
   return (
     <div className="space-y-8">

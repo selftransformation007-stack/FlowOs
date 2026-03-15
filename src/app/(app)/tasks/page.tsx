@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { 
   Plus, 
@@ -33,7 +35,7 @@ import { ConfirmDialog } from '@/src/components/ui/ConfirmDialog';
 import { NewTaskModal } from '@/src/components/modals/NewTaskModal';
 import { NewProjectModal } from '@/src/components/modals/NewProjectModal';
 import { TaskDetailDrawer } from '@/src/components/modals/TaskDetailDrawer';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const projects = [
   { id: 'inbox', name: 'Inbox', icon: Inbox, color: 'text-brand', count: 12 },
@@ -100,7 +102,7 @@ const TaskRow: React.FC<{ task: any; onClick: () => void; onArchive: (task: any)
 
     <div className="flex items-center gap-4 ml-4">
       <Link 
-        to={`/tasks/${task.id}`}
+        href={`/tasks/${task.id}`}
         onClick={(e) => e.stopPropagation()}
         className="text-text-4 hover:text-brand-light opacity-0 group-hover:opacity-100 transition-all p-1"
       >
@@ -283,14 +285,14 @@ const KanbanColumn: React.FC<{
   </div>
 );
 
-export const TasksPage = () => {
-  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = React.useState(false);
-  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = React.useState(false);
-  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = React.useState(false);
-  const [isArchiveDrawerOpen, setIsArchiveDrawerOpen] = React.useState(false);
-  const [isConfirmArchiveOpen, setIsConfirmArchiveOpen] = React.useState(false);
-  const [selectedTask, setSelectedTask] = React.useState<any>(null);
-  const [view, setView] = React.useState<'list' | 'board'>('list');
+export default function TasksPage() {
+  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+  const [isArchiveDrawerOpen, setIsArchiveDrawerOpen] = useState(false);
+  const [isConfirmArchiveOpen, setIsConfirmArchiveOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [view, setView] = useState<'list' | 'board'>('list');
 
   const handleTaskClick = (task: any) => {
     setSelectedTask(task);
@@ -329,7 +331,7 @@ export const TasksPage = () => {
             {projects.map(project => (
               <Link 
                 key={project.id}
-                to={project.id === 'inbox' ? '/tasks' : `/tasks/projects/${project.id}`}
+                href={project.id === 'inbox' ? '/tasks' : `/tasks/projects/${project.id}`}
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2.5 rounded-10 text-[14px] font-medium transition-all group",
                   project.id === 'inbox' ? "bg-brand/10 text-brand" : "text-text-3 hover:text-text-2 hover:bg-surface-3"

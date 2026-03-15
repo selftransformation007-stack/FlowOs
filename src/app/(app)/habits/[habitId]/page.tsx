@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -60,11 +62,12 @@ const mockHabit = {
   ]
 };
 
-export const HabitDetailPage = () => {
-  const { habitId } = useParams();
-  const navigate = useNavigate();
-  const [currentMonth, setCurrentMonth] = React.useState(new Date());
-  const [loggedToday, setLoggedToday] = React.useState(false);
+export default function HabitDetailPage() {
+  const params = useParams();
+  const habitId = params?.habitId as string;
+  const router = useRouter();
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [loggedToday, setLoggedToday] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
   
   // Modals state
@@ -108,12 +111,12 @@ export const HabitDetailPage = () => {
         title="Delete Habit Permanently?"
         description="This action cannot be undone. All history and data for this habit will be lost forever."
         confirmText="Delete Permanently"
-        onConfirm={() => navigate('/habits')}
+        onConfirm={() => router.push('/habits')}
         variant="danger"
       />
 
       <button 
-        onClick={() => navigate('/habits')}
+        onClick={() => router.push('/habits')}
         className="flex items-center gap-1.5 text-[13px] text-text-3 hover:text-text-1 transition-colors mb-6"
       >
         <ChevronLeft size={16} />
@@ -500,4 +503,5 @@ export const HabitDetailPage = () => {
       </div>
     </div>
   );
-};
+}
+

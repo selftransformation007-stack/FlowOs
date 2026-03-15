@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { 
   Dialog, 
@@ -6,7 +8,7 @@ import {
 } from '@/src/components/ui/Dialog';
 import { Search, Plus, CheckSquare, Flame, Target, Layout, ArrowRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 interface QuickAddTaskModalProps {
   open: boolean;
@@ -15,7 +17,7 @@ interface QuickAddTaskModalProps {
 
 export const QuickAddTaskModal: React.FC<QuickAddTaskModalProps> = ({ open, onOpenChange }) => {
   const [query, setQuery] = React.useState('');
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const mockTasks = [
     { id: '1', title: 'Design FlowOS Dashboard', project: 'Work Project', priority: 'P1' },
@@ -44,7 +46,7 @@ export const QuickAddTaskModal: React.FC<QuickAddTaskModalProps> = ({ open, onOp
   const filteredPages = query ? pages.filter(p => p.title.toLowerCase().includes(query.toLowerCase())) : [];
 
   const handleNavigate = (path: string) => {
-    navigate(path);
+    router.push(path);
     onOpenChange(false);
   };
 

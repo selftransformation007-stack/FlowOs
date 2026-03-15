@@ -1,8 +1,11 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import { AuthBrandPanel } from '@/src/components/auth/AuthBrandPanel';
 
-export const AuthLayout = () => {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex h-screen w-full bg-surface-0 overflow-hidden">
       {/* Left Panel */}
@@ -13,9 +16,9 @@ export const AuthLayout = () => {
       {/* Right Content */}
       <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-[420px] animate-fade-in">
-          <Outlet />
+          {children}
         </div>
       </div>
     </div>
   );
-};
+}

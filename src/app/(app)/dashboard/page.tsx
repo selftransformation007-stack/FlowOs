@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import { 
   Flame, 
   CheckCircle2, 
@@ -13,7 +15,8 @@ import {
   Target
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   BarChart, 
   Bar, 
@@ -64,9 +67,9 @@ const StatCard = ({ icon: Icon, label, value, subValue, colorClass }: any) => (
   </div>
 );
 
-export const DashboardPage = () => {
-  const navigate = useNavigate();
-  const [habitNote, setHabitNote] = React.useState('');
+export default function DashboardPage() {
+  const router = useRouter();
+  const [habitNote, setHabitNote] = useState('');
 
   return (
     <div className="space-y-8">
@@ -148,7 +151,7 @@ export const DashboardPage = () => {
 
               <div className="pt-2 flex items-center justify-between">
                 <p className="text-[11px] text-success font-bold">vs yesterday: ↑ +12 pts</p>
-                <Link to="/analytics" className="text-[11px] text-brand-light font-bold hover:underline">View full analytics →</Link>
+                <Link href="/analytics" className="text-[11px] text-brand-light font-bold hover:underline">View full analytics →</Link>
               </div>
             </div>
           </PopoverContent>
@@ -306,7 +309,7 @@ export const DashboardPage = () => {
                   </div>
                 </div>
                 <button 
-                  onClick={() => navigate('/focus')}
+                  onClick={() => router.push('/focus')}
                   className="flowos-shadcn-btn-primary w-full h-9 text-[13px]"
                 >
                   Start session
@@ -327,7 +330,7 @@ export const DashboardPage = () => {
         <div className="flowos-card">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-display text-[18px] font-bold text-text-1">Today's Habits</h3>
-            <Link to="/habits" className="text-[12px] text-brand-light font-medium hover:underline">View all</Link>
+            <Link href="/habits" className="text-[12px] text-brand-light font-medium hover:underline">View all</Link>
           </div>
           
           <div className="space-y-3">
@@ -338,7 +341,7 @@ export const DashboardPage = () => {
               { id: '4', name: 'Evening Walk', streak: 0, done: false, color: 'bg-success', emoji: '🚶' },
             ].map((habit) => (
               <div key={habit.id} className="flex items-center justify-between p-3 rounded-10 bg-surface-3/50 border border-white/[0.03] group hover:bg-surface-3 transition-colors">
-                <Link to={`/habits/${habit.id}`} className="flex items-center gap-3 flex-1">
+                <Link href={`/habits/${habit.id}`} className="flex items-center gap-3 flex-1">
                   <div className={cn("size-2.5 rounded-full", habit.color)} />
                   <div>
                     <p className={cn("text-[14px] font-medium transition-colors", habit.done ? "text-text-4 line-through" : "text-text-1")}>
@@ -403,7 +406,7 @@ export const DashboardPage = () => {
               { id: '3', title: 'Update project documentation', priority: 'low', due: 'Mar 12', done: true },
               { id: '4', title: 'Team sync meeting', priority: 'high', due: 'Today', done: false },
             ].map((task) => (
-              <Link to={`/tasks/${task.id}`} key={task.id} className="flex items-center justify-between p-3 rounded-10 bg-surface-3/50 border border-white/[0.03] group hover:bg-surface-3 transition-colors cursor-pointer">
+              <Link href={`/tasks/${task.id}`} key={task.id} className="flex items-center justify-between p-3 rounded-10 bg-surface-3/50 border border-white/[0.03] group hover:bg-surface-3 transition-colors cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "size-2 rounded-full",

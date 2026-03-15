@@ -1,5 +1,7 @@
+"use client";
+
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   Target, 
@@ -54,16 +56,17 @@ const mockGoal = {
   ]
 };
 
-export const GoalDetailPage = () => {
-  const { goalId } = useParams();
-  const navigate = useNavigate();
+export default function GoalDetailPage() {
+  const params = useParams();
+  const goalId = params?.goalId as string;
+  const router = useRouter();
 
   const circumference = 2 * Math.PI * 50;
 
   return (
     <div className="max-w-[960px] mx-auto animate-fade-in pb-20">
       <button 
-        onClick={() => navigate('/goals')}
+        onClick={() => router.push('/goals')}
         className="flex items-center gap-1.5 text-[13px] text-text-3 hover:text-text-1 transition-colors mb-6"
       >
         <ChevronLeft size={16} />
@@ -261,7 +264,7 @@ export const GoalDetailPage = () => {
                   <div key={note.id} className="flex gap-4 group">
                     <div className="flex flex-col items-center">
                       <div className="size-8 rounded-full bg-brand/15 flex items-center justify-center shrink-0 border border-brand/20">
-                        <BookOpen size={14} className="text-brand-light"/>
+                        < BookOpen size={14} className="text-brand-light"/>
                       </div>
                       {i !== mockGoal.notes.length - 1 && <div className="w-px flex-1 bg-white/[0.06] mt-2 mb-2"/>}
                     </div>
@@ -346,4 +349,5 @@ export const GoalDetailPage = () => {
       </div>
     </div>
   );
-};
+}
+

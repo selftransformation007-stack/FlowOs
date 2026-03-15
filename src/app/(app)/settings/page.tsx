@@ -11,7 +11,7 @@ const settingsNav = [
   { id: 'data', label: 'Data & Privacy', icon: Database },
 ];
 
-export const SettingsPage = () => {
+export default function SettingsPage() {
   return (
     <div className="flex gap-12 h-full max-w-6xl mx-auto">
       {/* Settings Nav */}

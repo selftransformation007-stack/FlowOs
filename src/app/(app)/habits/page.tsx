@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Plus, Flame, MoreHorizontal, ChevronLeft, ChevronRight, Archive, Trash2, Pencil, CheckCircle2, Copy, RotateCcw } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -35,7 +37,7 @@ const HabitCard: React.FC<{ habit: any, onArchive: (habit: any) => void }> = ({ 
           </div>
           <div>
             <h3 className="font-display text-[16px] font-bold text-text-1 leading-tight group-hover:text-brand transition-colors">
-              <Link to={`/habits/${habit.id}`}>{habit.name}</Link>
+              <Link href={`/habits/${habit.id}`}>{habit.name}</Link>
             </h3>
             <span className="flowos-badge mt-1">{habit.category}</span>
           </div>
@@ -124,7 +126,7 @@ const HabitCard: React.FC<{ habit: any, onArchive: (habit: any) => void }> = ({ 
   );
 };
 
-export const HabitsPage = () => {
+export default function HabitsPage() {
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isArchiveDrawerOpen, setIsArchiveDrawerOpen] = useState(false);
   const [isConfirmArchiveOpen, setIsConfirmArchiveOpen] = useState(false);

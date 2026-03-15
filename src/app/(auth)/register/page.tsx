@@ -1,12 +1,15 @@
+"use client";
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Github, User, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Github, User } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
-export const RegisterPage = () => {
+export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const strengthRules = [
     { label: 'At least 8 characters', met: password.length >= 8 },
@@ -31,7 +34,7 @@ export const RegisterPage = () => {
       {/* Tab Switcher */}
       <div className="flex p-1 bg-surface-2 rounded-10 border border-white/[0.07]">
         <Link 
-          to="/login" 
+          href="/login" 
           className="flex-1 py-2 text-sm font-medium text-text-3 hover:text-text-2 text-center"
         >
           Sign In
@@ -79,7 +82,7 @@ export const RegisterPage = () => {
           </div>
         </div>
 
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); navigate('/dashboard'); }}>
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
           <div className="space-y-1.5">
             <label className="text-[12px] font-medium text-text-2 ml-1">Full name</label>
             <div className="input-wrapper">
@@ -154,12 +157,12 @@ export const RegisterPage = () => {
         </form>
       </div>
 
-      <p className="text-center text-[13px] text-text-3">
+      <div className="text-center text-[13px] text-text-3">
         Already have an account?{' '}
-        <Link to="/login" className="text-brand-light hover:underline font-medium">
+        <Link href="/login" className="text-brand-light hover:underline font-medium">
           Sign in
         </Link>
-      </p>
+      </div>
     </div>
   );
-};
+}

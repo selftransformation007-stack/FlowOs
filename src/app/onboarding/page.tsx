@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Sparkles, Flame, Target, CheckCircle2, ArrowRight, ChevronRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { Logo } from '@/src/components/ui/Logo';
@@ -121,15 +123,15 @@ const steps = [
   }
 ];
 
-export const OnboardingPage = () => {
+export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigate('/dashboard');
+      router.push('/dashboard');
     }
   };
 
@@ -158,7 +160,7 @@ export const OnboardingPage = () => {
               />
             ))}
           </div>
-          <button onClick={() => navigate('/dashboard')} className="text-[13px] text-text-4 hover:text-text-2 font-medium">Skip</button>
+          <button onClick={() => router.push('/dashboard')} className="text-[13px] text-text-4 hover:text-text-2 font-medium">Skip</button>
         </div>
       </header>
 
@@ -199,4 +201,4 @@ export const OnboardingPage = () => {
       </footer>
     </div>
   );
-};
+}

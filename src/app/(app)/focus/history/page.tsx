@@ -1,5 +1,7 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   Timer, 
@@ -52,14 +54,14 @@ const mockHistory = [
   }
 ];
 
-export const FocusHistoryPage = () => {
-  const navigate = useNavigate();
-  const [expandedId, setExpandedId] = React.useState<string | null>(null);
+export default function FocusHistoryPage() {
+  const router = useRouter();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   return (
     <div className="max-w-[760px] mx-auto animate-fade-in pb-20">
       <button 
-        onClick={() => navigate('/focus')}
+        onClick={() => router.push('/focus')}
         className="flex items-center gap-1.5 text-[13px] text-text-3 hover:text-text-1 transition-colors mb-6"
       >
         <ChevronLeft size={16} />

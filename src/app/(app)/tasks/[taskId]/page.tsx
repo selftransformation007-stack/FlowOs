@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   X, 
@@ -67,12 +69,13 @@ const mockTask = {
   ]
 };
 
-export const TaskDetailPage = () => {
-  const { taskId } = useParams();
-  const navigate = useNavigate();
-  const [editingTitle, setEditingTitle] = React.useState(false);
-  const [editingDesc, setEditingDesc] = React.useState(false);
-  const [currentStatus, setCurrentStatus] = React.useState(mockTask.status);
+export default function TaskDetailPage() {
+  const params = useParams();
+  const taskId = params?.taskId as string;
+  const router = useRouter();
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [editingDesc, setEditingDesc] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(mockTask.status);
   const [isArchived, setIsArchived] = useState(false);
 
   // Modals state
@@ -108,12 +111,12 @@ export const TaskDetailPage = () => {
         title="Delete Task Permanently?"
         description="This action cannot be undone. All history and data for this task will be lost forever."
         confirmText="Delete Permanently"
-        onConfirm={() => navigate('/tasks')}
+        onConfirm={() => router.push('/tasks')}
         variant="danger"
       />
 
       <button 
-        onClick={() => navigate('/tasks')}
+        onClick={() => router.push('/tasks')}
         className="flex items-center gap-1.5 text-[13px] text-text-3 hover:text-text-1 transition-colors mb-6"
       >
         <ChevronLeft size={16} />

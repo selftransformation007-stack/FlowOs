@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { X, Bell, Check, CheckCircle2, Flame, Timer, Monitor, AlertCircle } from 'lucide-react';
 import { cn } from '@/src/lib/utils';

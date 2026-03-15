@@ -1,5 +1,6 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+"use client";
+
+import { useParams, useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   Download, 
@@ -62,14 +63,15 @@ const mockReport = {
   ]
 };
 
-export const AnalyticsReportPage = () => {
-  const { reportId } = useParams();
-  const navigate = useNavigate();
+export default function AnalyticsReportPage() {
+  const params = useParams();
+  const reportId = params?.reportId as string;
+  const router = useRouter();
 
   return (
     <div className="max-w-[900px] mx-auto animate-fade-in pb-20">
       <button 
-        onClick={() => navigate('/analytics')}
+        onClick={() => router.push('/analytics')}
         className="flex items-center gap-1.5 text-[13px] text-text-3 hover:text-text-1 transition-colors mb-6"
       >
         <ChevronLeft size={16} />
