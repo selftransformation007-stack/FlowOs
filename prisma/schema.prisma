@@ -1,0 +1,959 @@
+// ================================================================
+// prisma/schema.prisma
+// FlowOS — Final Production Database Schema
+//
+// Stack:  Next.js 16 · Prisma 6 · PostgreSQL · Auth.js v5
+// Auth:   Credentials only (email + password) — no OAuth
+//
+// Modules:
+//   1.  Auth & User              (User, Session, PasswordResetToken)
+//   2.  User Settings            (UserSettings)
+//   3.  Onboarding               (UserOnboardingIntent)
+//   4.  Habits                   (Habit, HabitLog)
+//   5.  Tasks                    (Project, Label, Task, Subtask,
+//                                 TaskLabel, TaskComment)
+//   6.  Daily Planner            (PlannerBlock)
+//   7.  Goals                    (Goal, KeyResult,
+//                                 KeyResultProgress, GoalProgressNote)
+//   8.  Focus / Pomodoro         (FocusSession, DistractionLog)
+//   9.  Time Tracking            (TimeEntry)
+//  10.  Screen Time              (ScreenTimeLog, ScreenTimeLimit)
+//  11.  Analytics                (ProductivityScore)
+//  12.  Notifications            (Notification)
+//  13.  Integrations             (Integration)
+//
+//  Total: 26 models · 27 enums
+//
+//  Changes from previous version:
+//  - Removed Account + VerificationToken (OAuth removed; credentials only)
+//  - Replaced Theme enum (DARK/LIGHT/SYSTEM) with ThemeName enum
+//    storing the actual CSS theme name (frost, void, carbon, etc.)
+//  - Removed UserSettings.accentColor (full named themes replace it)
+//  - Added PlannerBlock.isCompleted  ← required by PL-01 spec (was missing)
+//  - Added Task.archivedAt timestamp  ← complements isArchived boolean
+//  - Split notifyScreenLimit into two fields:
+//    notifyScreenLimitApproaching + notifyScreenLimitReached
+//  - All 8 alignment-audit gaps resolved or documented inline
+// ================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ================================================================
+// ENUMS
+// ================================================================
+
+// ── User ─────────────────────────────────────────────────────────
+
+enum Plan {
+  FREE
+  PRO
+  TEAM
+}
+
+// ── Settings — Theme ─────────────────────────────────────────────
+// The full CSS theme name. Maps to a file in src/styles/themes/.
+// Dark themes:  VOID | CARBON | AURA | INK
+// Light themes: FROST | STUDIO | MINERAL | BLOOM | SAGE | ZINC
+
+enum ThemeName {
+  VOID // true black + electric indigo   (dark)
+  CARBON // neutral gray + orange-red      (dark)
+  AURA // deep navy + liquid gold        (dark)
+  INK // teal-black + liquid teal       (dark)
+  FROST // pure white + cobalt blue       (light, default)
+  STUDIO // warm cream + indigo-violet     (light)
+  MINERAL // stone-gray + terracotta        (light)
+  BLOOM // blush-pink + burgundy          (light)
+  SAGE // sage-green + forest            (light)
+  ZINC // neutral white + pure black     (light)
+}
+
+enum FontSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+// ── Onboarding ───────────────────────────────────────────────────
+
+enum OnboardingIntent {
+  HABITS
+  TASKS
+  FOCUS
+  TIME
+  GOALS
+  SCREEN_TIME
+}
+
+// ── Habits ───────────────────────────────────────────────────────
+
+enum HabitFrequency {
+  DAILY // every day
+  WEEKDAYS // Mon–Fri only
+  CUSTOM // user-specified days via customDays[]
+}
+
+enum HabitCategory {
+  HEALTH
+  FITNESS
+  LEARNING
+  MINDFULNESS
+  SOCIAL
+  CREATIVE
+  WORK
+  FINANCE
+  OTHER
+}
+
+enum HabitStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+// ── Tasks ────────────────────────────────────────────────────────
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  P1 // Urgent  — red
+  P2 // High    — amber
+  P3 // Medium  — blue
+  NONE // No priority
+}
+
+enum TaskCommentType {
+  COMMENT // user-authored text
+  SYSTEM_EVENT // auto-logged e.g. "Status changed to In Progress"
+}
+
+// ── Planner ──────────────────────────────────────────────────────
+
+enum PlannerBlockType {
+  TASK
+  HABIT
+  MEETING
+  BREAK
+  CUSTOM
+}
+
+// ── Goals ────────────────────────────────────────────────────────
+
+enum GoalCategory {
+  HEALTH
+  CAREER
+  LEARNING
+  MINDFULNESS
+  FINANCE
+  PERSONAL
+}
+
+enum GoalStatus {
+  ACTIVE
+  ON_HOLD // paused — settable from DP-03 sidebar status select
+  COMPLETED // set only via GO-01 confirm dialog
+  ARCHIVED // set only via GO-02 confirm dialog
+}
+
+// ── Focus / Pomodoro ─────────────────────────────────────────────
+
+enum FocusSessionType {
+  FOCUS
+  SHORT_BREAK
+  LONG_BREAK
+}
+
+enum FocusSessionStatus {
+  RUNNING
+  PAUSED
+  COMPLETED
+  ABANDONED // stopped before 50% of planned duration
+}
+
+enum DistractionCategory {
+  PHONE
+  WEB
+  CHAT
+  THOUGHT
+  PERSON
+  OTHER
+}
+
+// ── Screen Time ──────────────────────────────────────────────────
+
+enum AppCategory {
+  PRODUCTIVE
+  NEUTRAL
+  DISTRACTING
+  SOCIAL
+  ENTERTAINMENT
+}
+
+enum ScreenTimeSource {
+  MANUAL // entered by user
+  EXTENSION // captured by browser extension
+}
+
+// ── Time Tracking ────────────────────────────────────────────────
+
+enum TimeEntrySource {
+  MANUAL // via M-08 Log Time modal
+  FOCUS_SESSION // auto-created when a FocusSession completes
+}
+
+// ── Notifications ────────────────────────────────────────────────
+
+enum NotificationType {
+  HABIT_REMINDER
+  TASK_DUE
+  GOAL_DEADLINE
+  FOCUS_END
+  SCREEN_LIMIT_APPROACHING
+  SCREEN_LIMIT_REACHED
+  STREAK_MILESTONE
+  WEEKLY_REPORT
+  SYSTEM
+}
+
+// ── Integrations ─────────────────────────────────────────────────
+
+enum IntegrationProvider {
+  GOOGLE_CALENDAR
+  NOTION
+  TODOIST
+}
+
+enum IntegrationStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+// ================================================================
+// SECTION 1 — AUTH & USER
+//
+// Credentials-only auth. No OAuth.
+// Account + VerificationToken models are not needed and removed.
+// ================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+
+  // Hashed with bcryptjs 12 rounds. Never null — credentials only.
+  password String @db.Text
+
+  // ── Profile (Settings → Profile tab)
+  image    String? @db.Text // URL — avatar upload
+  bio      String? @db.Text // max 300 chars
+  timezone String  @default("UTC") // IANA e.g. "Asia/Kolkata"
+
+  plan           Plan    @default(FREE)
+  onboardingDone Boolean @default(false) @map("onboarding_done")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // ── Relations
+  sessions           Session[]
+  settings           UserSettings?
+  onboardingIntents  UserOnboardingIntent[]
+  habits             Habit[]
+  habitLogs          HabitLog[]
+  projects           Project[]
+  labels             Label[]
+  tasks              Task[]
+  subtasks           Subtask[]
+  taskComments       TaskComment[]
+  plannerBlocks      PlannerBlock[]
+  goals              Goal[]
+  keyResults         KeyResult[]
+  goalProgressNotes  GoalProgressNote[]
+  focusSessions      FocusSession[]
+  distractionLogs    DistractionLog[]
+  timeEntries        TimeEntry[]
+  screenTimeLogs     ScreenTimeLog[]
+  screenTimeLimits   ScreenTimeLimit[]
+  productivityScores ProductivityScore[]
+  notifications      Notification[]
+  integrations       Integration[]
+
+  @@map("users")
+}
+
+// Auth.js v5 JWT sessions — one row per active browser/device session.
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Shared token table for forgot-password AND email-change flows.
+// TTL: 15 minutes. Consumed (deleted) on use.
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String // address this token was issued to
+  token   String   @unique
+  expires DateTime
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("password_reset_tokens")
+}
+
+// ================================================================
+// SECTION 2 — USER SETTINGS
+//
+// One record per user, auto-seeded on registration with all defaults.
+// ================================================================
+
+model UserSettings {
+  id     String @id @default(cuid())
+  userId String @unique @map("user_id")
+
+  // ── Appearance (Settings → Appearance tab)
+  // Full CSS theme name — maps to a file in src/styles/themes/.
+  theme    ThemeName @default(FROST)
+  fontSize FontSize  @default(MEDIUM) @map("font_size")
+
+  // ── Focus / Pomodoro settings
+  focusDuration      Int @default(25) @map("focus_duration") // minutes (5–90)
+  shortBreakDuration Int @default(5) @map("short_break_duration") // minutes
+  longBreakDuration  Int @default(15) @map("long_break_duration") // minutes
+  longBreakAfter     Int @default(4) @map("long_break_after") // sessions before long break
+
+  autoStartBreaks Boolean @default(false) @map("auto_start_breaks")
+  autoStartFocus  Boolean @default(false) @map("auto_start_focus")
+
+  // "none" | "ding" | "bell" | "chime" | "gong"
+  focusSound  String @default("ding") @map("focus_sound")
+  focusVolume Int    @default(70) @map("focus_volume") // 0–100
+
+  // ── Notification preferences
+  notifyHabitReminders Boolean @default(true) @map("notify_habit_reminders")
+  habitReminderTime    String? @map("habit_reminder_time") // "HH:MM"; null = off
+
+  notifyTaskDue      Boolean @default(true) @map("notify_task_due")
+  taskDueHoursBefore Int     @default(1) @map("task_due_hours_before") // 1 | 2 | 24
+
+  notifyWeeklyReport Boolean @default(true) @map("notify_weekly_report")
+  weeklyReportDay    Int     @default(1) @map("weekly_report_day") // 0=Sun…6=Sat
+
+  notifyFocusEnd Boolean @default(true) @map("notify_focus_end")
+
+  // Two separate toggles for screen time alerts (not one combined)
+  notifyScreenLimitApproaching Boolean @default(true) @map("notify_screen_limit_approaching")
+  notifyScreenLimitReached     Boolean @default(true) @map("notify_screen_limit_reached")
+
+  notifyGoalDeadline     Boolean @default(true) @map("notify_goal_deadline")
+  goalDeadlineDaysBefore Int     @default(3) @map("goal_deadline_days_before")
+
+  notifyStreakMilestone Boolean @default(true) @map("notify_streak_milestone")
+
+  // ── Screen Time
+  screenTimeDailyGoalMinutes Int? @map("screen_time_daily_goal_minutes")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+// ================================================================
+// SECTION 3 — ONBOARDING
+// ================================================================
+
+model UserOnboardingIntent {
+  id     String           @id @default(cuid())
+  userId String           @map("user_id")
+  intent OnboardingIntent
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, intent])
+  @@map("user_onboarding_intents")
+}
+
+// ================================================================
+// SECTION 4 — HABITS
+// ================================================================
+
+model Habit {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  name  String
+  emoji String @default("✦")
+  color String @default("#2563EB") // hex from 10-colour swatch
+
+  category   HabitCategory  @default(OTHER)
+  frequency  HabitFrequency @default(DAILY)
+  customDays Int[]          @default([]) @map("custom_days") // 0=Sun…6=Sat, only for CUSTOM
+
+  targetPerDay Int @default(1) @map("target_per_day") // 1–20
+
+  reminderEnabled Boolean @default(false) @map("reminder_enabled")
+  reminderTime    String? @map("reminder_time") // "HH:MM"; null = off
+
+  notes String? @db.Text // "Why does this habit matter to you?"
+
+  // Set via GO-05 "Link habit to goal" from Goal Detail — not from M-01
+  goalId String? @map("goal_id")
+
+  status    HabitStatus @default(ACTIVE)
+  sortOrder Int         @default(0) @map("sort_order") // reorder via drag handle
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  logs HabitLog[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@map("habits")
+}
+
+// One row per habit per calendar day.
+model HabitLog {
+  id      String @id @default(cuid())
+  habitId String @map("habit_id")
+  userId  String @map("user_id")
+
+  logDate   DateTime @map("log_date") @db.Date
+  completed Boolean  @default(true)
+  count     Int      @default(1) // incremented up to Habit.targetPerDay
+  note      String?  @db.Text
+
+  loggedAt DateTime @default(now()) @map("logged_at")
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, logDate])
+  @@index([habitId, logDate])
+  @@index([userId, logDate])
+  @@map("habit_logs")
+}
+
+// ================================================================
+// SECTION 5 — TASKS
+// ================================================================
+
+model Project {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  name        String
+  emoji       String  @default("📁")
+  color       String  @default("#2563EB")
+  description String? @db.Text
+
+  isArchived Boolean @default(false) @map("is_archived")
+  sortOrder  Int     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  timeEntries TimeEntry[]
+
+  @@index([userId])
+  @@index([userId, isArchived])
+  @@map("projects")
+}
+
+model Label {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  name  String
+  color String @default("#2563EB")
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks TaskLabel[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("labels")
+}
+
+model Task {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  projectId String? @map("project_id") // null = Inbox
+  goalId    String? @map("goal_id") // settable from M-03 or GO-04
+
+  title       String
+  description String? @db.Text
+
+  status   TaskStatus   @default(TODO)
+  priority TaskPriority @default(NONE)
+
+  dueDate         DateTime? @map("due_date") @db.Date
+  estimateMinutes Int?      @map("estimate_minutes") // 15|30|60|120|240|480|960
+
+  completedAt DateTime? @map("completed_at")
+
+  isArchived Boolean   @default(false) @map("is_archived")
+  archivedAt DateTime? @map("archived_at")
+
+  sortOrder Int @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  goal          Goal?          @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  labels        TaskLabel[]
+  subtasks      Subtask[]
+  comments      TaskComment[]
+  timeEntries   TimeEntry[]
+  plannerBlocks PlannerBlock[]
+  focusSessions FocusSession[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, projectId])
+  @@index([userId, dueDate])
+  @@index([userId, priority])
+  @@index([userId, isArchived])
+  @@map("tasks")
+}
+
+model TaskLabel {
+  taskId  String @map("task_id")
+  labelId String @map("label_id")
+
+  task  Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, labelId])
+  @@map("task_labels")
+}
+
+model Subtask {
+  id     String @id @default(cuid())
+  taskId String @map("task_id")
+  userId String @map("user_id")
+
+  title     String
+  done      Boolean   @default(false)
+  doneAt    DateTime? @map("done_at")
+  sortOrder Int       @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("subtasks")
+}
+
+model TaskComment {
+  id     String          @id @default(cuid())
+  taskId String          @map("task_id")
+  userId String          @map("user_id")
+  type   TaskCommentType @default(COMMENT)
+
+  body             String? @db.Text
+  eventDescription String? @map("event_description")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, createdAt])
+  @@map("task_comments")
+}
+
+// ================================================================
+// SECTION 6 — DAILY PLANNER
+// ================================================================
+
+model PlannerBlock {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  taskId  String? @map("task_id") // FK to Task
+  habitId String? @map("habit_id") // soft link to Habit (no FK — safe if habit deleted)
+
+  title String
+  type  PlannerBlockType @default(TASK)
+  date  DateTime         @db.Date
+
+  startTime String @map("start_time") // "HH:MM" 24-h
+  endTime   String @map("end_time") // "HH:MM" 24-h
+
+  color String  @default("#2563EB")
+  notes String? @db.Text
+
+  // Set via "Mark as completed" toggle in PL-01 Edit Block modal
+  isCompleted Boolean @default(false) @map("is_completed")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, date])
+  @@map("planner_blocks")
+}
+
+// ================================================================
+// SECTION 7 — GOALS
+// ================================================================
+
+model Goal {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  title       String
+  description String?      @db.Text
+  category    GoalCategory @default(PERSONAL)
+  status      GoalStatus   @default(ACTIVE)
+  targetDate  DateTime     @map("target_date") @db.Date
+  completedAt DateTime?    @map("completed_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keyResults    KeyResult[]
+  progressNotes GoalProgressNote[]
+  tasks         Task[]
+  habits        Habit[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@map("goals")
+}
+
+model KeyResult {
+  id     String @id @default(cuid())
+  goalId String @map("goal_id")
+  userId String @map("user_id")
+
+  title        String
+  currentValue Float  @default(0) @map("current_value")
+  targetValue  Float  @map("target_value")
+  unit         String @default("count") // "count"|"%"|"books"|"km"|"hours"|"sessions"|"kg"|<custom>
+
+  sortOrder Int @default(0) @map("sort_order") // drag-to-reorder on DP-03
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  goal     Goal                @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  progress KeyResultProgress[]
+
+  @@index([goalId])
+  @@map("key_results")
+}
+
+// Immutable history of every KR value update.
+// Powers KR sparklines and the progress-over-time chart on DP-03.
+model KeyResultProgress {
+  id          String  @id @default(cuid())
+  keyResultId String  @map("key_result_id")
+  value       Float
+  note        String? @db.Text
+
+  recordedAt DateTime @default(now()) @map("recorded_at")
+
+  keyResult KeyResult @relation(fields: [keyResultId], references: [id], onDelete: Cascade)
+
+  @@index([keyResultId, recordedAt])
+  @@map("key_result_progress")
+}
+
+model GoalProgressNote {
+  id     String @id @default(cuid())
+  goalId String @map("goal_id")
+  userId String @map("user_id")
+
+  note String @db.Text
+
+  // Snapshot: [{ krId, title, prevValue, newValue, unit }]
+  krSnapshot Json? @map("kr_snapshot")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([goalId, createdAt])
+  @@map("goal_progress_notes")
+}
+
+// ================================================================
+// SECTION 8 — FOCUS / POMODORO
+// ================================================================
+
+model FocusSession {
+  id     String  @id @default(cuid())
+  userId String  @map("user_id")
+  taskId String? @map("task_id")
+
+  type   FocusSessionType   @default(FOCUS)
+  status FocusSessionStatus @default(RUNNING)
+
+  plannedDurationSecs Int @map("planned_duration_secs") // from UserSettings
+  actualDurationSecs  Int @default(0) @map("actual_duration_secs")
+
+  startedAt   DateTime  @map("started_at")
+  pausedAt    DateTime? @map("paused_at") // non-null while paused
+  completedAt DateTime? @map("completed_at")
+
+  totalPausedSecs Int @default(0) @map("total_paused_secs")
+  cyclePosition   Int @default(1) @map("cycle_position") // 1–4, resets after LONG_BREAK
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task         Task?            @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  distractions DistractionLog[]
+
+  @@index([userId, startedAt])
+  @@index([userId, status])
+  @@map("focus_sessions")
+}
+
+model DistractionLog {
+  id             String @id @default(cuid())
+  focusSessionId String @map("focus_session_id")
+  userId         String @map("user_id")
+
+  note     String              @db.Text // max 100 chars
+  category DistractionCategory @default(OTHER)
+
+  loggedAt DateTime @default(now()) @map("logged_at")
+
+  session FocusSession @relation(fields: [focusSessionId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([focusSessionId])
+  @@map("distraction_logs")
+}
+
+// ================================================================
+// SECTION 9 — TIME TRACKING
+// ================================================================
+
+model TimeEntry {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  projectId String? @map("project_id")
+  taskId    String? @map("task_id")
+
+  durationMinutes Int       @map("duration_minutes")
+  startTime       DateTime? @map("start_time") // "Start & End" mode
+  endTime         DateTime? @map("end_time")
+
+  logDate DateTime @map("log_date") @db.Date
+  notes   String?  @db.Text
+
+  source         TimeEntrySource @default(MANUAL)
+  focusSessionId String?         @map("focus_session_id") // set when source = FOCUS_SESSION
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  task    Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, logDate])
+  @@index([userId, projectId])
+  @@map("time_entries")
+}
+
+// ================================================================
+// SECTION 10 — SCREEN TIME
+// ================================================================
+
+// One row per (user, app, day). Upserted by extension or manual entry.
+model ScreenTimeLog {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  logDate   DateTime @map("log_date") @db.Date
+  appName   String
+  appDomain String?  @map("app_domain") // e.g. "youtube.com" — shown as sub-label in SC list
+
+  category        AppCategory @default(NEUTRAL)
+  durationMinutes Int         @map("duration_minutes")
+
+  // 24-element array — minutes used per hour. Index 0 = 00:00–00:59.
+  hourlyBreakdown Json? @map("hourly_breakdown")
+
+  source ScreenTimeSource @default(MANUAL)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, logDate, appName])
+  @@index([userId, logDate])
+  @@map("screen_time_logs")
+}
+
+model ScreenTimeLimit {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  // Exactly one of appName / category must be non-null
+  appName  String?      @map("app_name")
+  category AppCategory?
+
+  limitMinutes   Int     @map("limit_minutes") // daily cap, min 15
+  alertAtPercent Int     @default(80) @map("alert_at_percent") // fires SCREEN_LIMIT_APPROACHING
+  isEnabled      Boolean @default(true) @map("is_enabled")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("screen_time_limits")
+}
+
+// ================================================================
+// SECTION 11 — ANALYTICS / PRODUCTIVITY SCORE
+//
+// One row per user per day. Computed nightly or on-demand.
+//
+// Formula:
+//   totalScore = (habitScore × 0.25) + (focusScore × 0.30)
+//              + (taskScore  × 0.30) + (screenTimeScore × 0.15)
+// ================================================================
+
+model ProductivityScore {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  scoreDate DateTime @map("score_date") @db.Date
+
+  totalScore      Int @map("total_score")
+  habitScore      Int @map("habit_score") // 25% weight
+  focusScore      Int @map("focus_score") // 30% weight
+  taskScore       Int @map("task_score") // 30% weight
+  screenTimeScore Int @map("screen_time_score") // 15% weight
+
+  // Raw inputs stored for /analytics drill-down
+  habitsCompleted   Int @map("habits_completed")
+  habitsTotalDue    Int @map("habits_total_due")
+  focusMinutes      Int @map("focus_minutes")
+  tasksCompleted    Int @map("tasks_completed")
+  screenTimeMinutes Int @map("screen_time_minutes")
+
+  computedAt DateTime @default(now()) @map("computed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, scoreDate])
+  @@index([userId, scoreDate])
+  @@map("productivity_scores")
+}
+
+// ================================================================
+// SECTION 12 — NOTIFICATIONS
+// ================================================================
+
+model Notification {
+  id     String           @id @default(cuid())
+  userId String           @map("user_id")
+  type   NotificationType
+
+  title  String
+  body   String  @db.Text
+  isRead Boolean @default(false) @map("is_read")
+
+  // Deep-link payload by type:
+  //   HABIT_REMINDER           → { habitId }
+  //   TASK_DUE                 → { taskId }
+  //   GOAL_DEADLINE            → { goalId }
+  //   STREAK_MILESTONE         → { habitId, streakDays: 7|14|30|100 }
+  //   SCREEN_LIMIT_APPROACHING → { limitId, appName, percentUsed }
+  //   SCREEN_LIMIT_REACHED     → { limitId, appName }
+  //   WEEKLY_REPORT            → { reportDate }
+  //   FOCUS_END | SYSTEM       → {}
+  metadata Json?
+
+  actionUrl String? @map("action_url") // in-app deep-link
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+// ================================================================
+// SECTION 13 — INTEGRATIONS
+// ================================================================
+
+model Integration {
+  id       String              @id @default(cuid())
+  userId   String              @map("user_id")
+  provider IntegrationProvider
+  status   IntegrationStatus   @default(DISCONNECTED)
+
+  // OAuth tokens — store encrypted at rest, never return raw
+  accessToken  String?   @map("access_token") @db.Text
+  refreshToken String?   @map("refresh_token") @db.Text
+  tokenExpiry  DateTime? @map("token_expiry")
+  scope        String?
+
+  // API key — Notion only, store encrypted
+  apiKey String? @map("api_key") @db.Text
+
+  // Remote account metadata shown in Settings → Integrations card
+  externalId    String? @map("external_id")
+  externalName  String? @map("external_name")
+  externalEmail String? @map("external_email")
+
+  lastSyncedAt DateTime? @map("last_synced_at")
+  errorMessage String?   @map("error_message") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
+  @@map("integrations")
+}
