@@ -20,8 +20,8 @@
 
 import { Resend } from "resend";
 
-const resend  = new Resend(process.env.RESEND_API_KEY!);
-const FROM    = "FlowOS <noreply@flowos.app>";
+const resend = new Resend(process.env.RESEND_API_KEY!);
+const FROM = "FlowOS <onboarding@resend.dev>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 // ─────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 /** Sends an email and throws on Resend API error. */
 async function sendEmail(
-  options: Parameters<typeof resend.emails.send>[0]
+  options: Parameters<typeof resend.emails.send>[0],
 ): Promise<void> {
   const { error } = await resend.emails.send(options);
   if (error) throw new Error(`[mail] Resend error: ${error.message}`);
@@ -87,13 +87,13 @@ function btn(href: string, label: string): string {
 
 export async function sendWelcomeEmail(
   email: string,
-  name:  string
+  name: string,
 ): Promise<void> {
   const url = `${APP_URL}/dashboard`;
 
   await sendEmail({
-    from:    FROM,
-    to:      email,
+    from: FROM,
+    to: email,
     subject: "Welcome to FlowOS 🎉",
     html: shell(`
       <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px;">
@@ -122,33 +122,37 @@ export async function sendWelcomeEmail(
 
 export async function sendPasswordResetEmail(
   email: string,
-  token: string
+  token: string,
 ): Promise<void> {
   const url = `${APP_URL}/reset-password?token=${token}`;
 
-  await sendEmail({
-    from:    FROM,
-    to:      email,
-    subject: "Reset your FlowOS password",
-    html: shell(`
-      <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px;">
-        Reset your password
-      </h1>
-      <p style="font-size: 15px; line-height: 1.7; color: #9B98B8; margin: 0 0 32px;">
-        We received a request to reset the password for your FlowOS account.
-        Click the button below to choose a new password. This link expires in
-        <strong style="color: #F1F0FF;">15 minutes</strong>.
-      </p>
-      ${btn(url, "Reset password")}
-      <p style="font-size: 13px; color: #4B4968; margin: 28px 0 8px;">
-        If you didn't request this, you can safely ignore this email.
-        Your password will not change.
-      </p>
-      <p style="font-size: 12px; color: #3D3B58; margin: 0;">
-        Or copy this link: <span style="color: #6B6880;">${url}</span>
-      </p>
-    `),
-  });
+  try {
+    await sendEmail({
+      from: FROM,
+      to: email,
+      subject: "Reset your FlowOS password",
+      html: shell(`
+        <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px;">
+          Reset your password
+        </h1>
+        <p style="font-size: 15px; line-height: 1.7; color: #9B98B8; margin: 0 0 32px;">
+          We received a request to reset the password for your FlowOS account.
+          Click the button below to choose a new password. This link expires in
+          <strong style="color: #F1F0FF;">15 minutes</strong>.
+        </p>
+        ${btn(url, "Reset password")}
+        <p style="font-size: 13px; color: #4B4968; margin: 28px 0 8px;">
+          If you didn't request this, you can safely ignore this email.
+          Your password will not change.
+        </p>
+        <p style="font-size: 12px; color: #3D3B58; margin: 0;">
+          Or copy this link: <span style="color: #6B6880;">${url}</span>
+        </p>
+      `),
+    });
+  } catch (error) {
+    throw error;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -160,13 +164,13 @@ export async function sendPasswordResetEmail(
 
 export async function sendEmailChangeVerification(
   newEmail: string,
-  token:    string
+  token: string,
 ): Promise<void> {
   const url = `${APP_URL}/settings/confirm-email?token=${token}`;
 
   await sendEmail({
-    from:    FROM,
-    to:      newEmail,
+    from: FROM,
+    to: newEmail,
     subject: "Confirm your new FlowOS email address",
     html: shell(`
       <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px;">
