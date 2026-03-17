@@ -63,6 +63,7 @@ export default function RegisterPage() {
           Join 2,400+ users building better habits.
         </p>
       </div>
+      
       <div className="grid grid-cols-2 gap-3">
         <button className="flowos-shadcn-btn-secondary flex items-center justify-center gap-2">
           <GoogleSvg />

@@ -1,10 +1,10 @@
 "use server";
 
-import { auth, signIn } from "@/src/lib/auth";
+import { auth, signIn, signOut } from "@/src/lib/auth";
 import { sendPasswordResetEmail } from "@/src/lib/mail";
 import { hashPassword } from "@/src/lib/password";
 import { db } from "@/src/lib/prisma";
-import { createToken } from "@/src/lib/tokens";
+import { createToken, validateTOken } from "@/src/lib/tokens";
 import {
   ForgotPasswordInput,
   forgotPasswordSchema,
@@ -12,6 +12,8 @@ import {
   loginSchema,
   RegisterInput,
   registerSchema,
+  resetPasswordSchema,
+  ResetPasswordSchema,
 } from "@/src/schema/auth.schema";
 import { ActionResult } from "@/src/types/auth.types";
 import { redirect } from "next/navigation";
@@ -197,5 +199,70 @@ export async function forgotPasswordAction(
     success: true,
     message:
       "Verification email has been sent to your email address! Please check it out.",
+  };
+}
+
+export async function logoutAction(): Promise<void> {
+  try {
+    const session = await auth();
+    if (session?.user?.id) {
+      await db.session.deleteMany({ where: { userId: session.user.id } });
+    }
+  } catch (error) {
+    console.log("[logout] action");
+    throw error;
+  }
+  await signOut({ redirectTo: "/login" });
+}
+
+export async function resetPasswordAction(
+  formData: ResetPasswordSchema,
+): Promise<ActionResult> {
+  const parsed = resetPasswordSchema.safeParse(formData);
+  if (!parsed.success) {
+    const err = parsed.error;
+    return {
+      success: false,
+      error: err.message,
+      field: err.issues[0]?.path[0] as string,
+    };
+  }
+
+  const { password, token } = parsed.data;
+
+  const email = await validateTOken(token);
+  if (!email) {
+    return {
+      success: false,
+      error: "This reset link is invalid or expired. Please request new one.",
+    };
+  }
+
+  const user = await db.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  if (!user) {
+    return {
+      success: false,
+      error: "Account not found",
+    };
+  }
+
+  const hashed = await hashPassword(password);
+
+  await db.$transaction([
+    db.user.update({
+      where: { id: user.id },
+      data: { password: hashed },
+    }),
+    db.session.deleteMany({ where: { userId: user.id } }),
+    db.passwordResetToken.deleteMany({ where: { token } }),
+  ]);
+
+  return {
+    success: true,
+    message: "Password Updated! You can now sign in with your new password.",
   };
 }
