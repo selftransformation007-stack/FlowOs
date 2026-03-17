@@ -39,3 +39,7 @@ next-env.d.ts
 
 # End of https://www.toptal.com/developers/gitignore/api/nextjs
 /src/generated/prisma
+
+.env
+.env.local
+.env.*.local
