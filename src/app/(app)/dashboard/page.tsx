@@ -26,8 +26,8 @@ import {
   Tooltip, 
   ResponsiveContainer,
 } from 'recharts';
-import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/Popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/Select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/Popover';
 
 const chartData = [
   { name: 'Mon', habits: 80, tasks: 60, focus: 40 },

@@ -73,18 +73,6 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="flex p-1 bg-surface-2 rounded-10 border border-white/[0.07]">
-        <button className="flex-1 py-2 text-sm font-medium text-text-1 bg-surface-3 rounded-[8px] shadow-sm">
-          Sign In
-        </button>
-        <Link
-          href="/register"
-          className="flex-1 py-2 text-sm font-medium text-text-3 hover:text-text-2 text-center"
-        >
-          Create Account
-        </Link>
-      </div>
-
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <button className="flowos-shadcn-btn-secondary flex items-center justify-center gap-2">

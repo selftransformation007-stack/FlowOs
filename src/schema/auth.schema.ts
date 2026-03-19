@@ -70,3 +70,33 @@ export const resetPasswordSchema = z
   });
 
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(50).trim(),
+  bio: z
+    .string()
+    .max(300, "Bio must be 300 characters or less")
+    .nullable()
+    .optional(),
+  timezone: z.string().min(1, "Timezone is required"),
+  image: z.string().url("Invalid image URL").nullable().optional(),
+});
+
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  })
+  .refine((d) => d.currentPassword !== d.newPassword, {
+    path: ["newPassword"],
+    message: "New password must differ from current password",
+  });
+
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

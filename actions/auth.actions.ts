@@ -2,10 +2,12 @@
 
 import { auth, signIn, signOut } from "@/src/lib/auth";
 import { sendPasswordResetEmail } from "@/src/lib/mail";
-import { hashPassword } from "@/src/lib/password";
+import { hashPassword, verifyPassword } from "@/src/lib/password";
 import { db } from "@/src/lib/prisma";
 import { createToken, validateTOken } from "@/src/lib/tokens";
 import {
+  ChangePasswordInput,
+  changePasswordSchema,
   ForgotPasswordInput,
   forgotPasswordSchema,
   LoginInput,
@@ -14,8 +16,11 @@ import {
   registerSchema,
   resetPasswordSchema,
   ResetPasswordSchema,
+  UpdateProfileInput,
+  updateProfileSchema,
 } from "@/src/schema/auth.schema";
 import { ActionResult } from "@/src/types/auth.types";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function requireAuth(): Promise<string> {
@@ -266,3 +271,102 @@ export async function resetPasswordAction(
     message: "Password Updated! You can now sign in with your new password.",
   };
 }
+
+export async function updateProfileAction(
+  formData: UpdateProfileInput,
+): Promise<ActionResult> {
+  const userId = await requireAuth();
+
+  const parsed = updateProfileSchema.safeParse(formData);
+  if (!parsed.success) {
+    const err = parsed.error;
+    return {
+      success: false,
+      error: err.message,
+      field: err.issues[0]?.path[0] as string,
+    };
+  }
+
+  const { name, timezone, bio, image } = parsed.data;
+
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      name,
+      timezone,
+      ...(bio !== undefined && { bio: bio ?? null }),
+      ...(image !== undefined && { image: image ?? null }),
+    },
+  });
+
+  revalidatePath("/settings");
+  return {
+    success: true,
+    message: "Profile Updated!",
+  };
+}
+
+export async function changePasswordAction(
+  formData: ChangePasswordInput,
+): Promise<ActionResult> {
+  const userId = await requireAuth();
+
+  const parsed = changePasswordSchema.safeParse(formData);
+  if (!parsed.success) {
+    const err = parsed.error;
+    return {
+      success: false,
+      error: err.message,
+      field: err.issues[0]?.path[0] as string,
+    };
+  }
+
+  const { currentPassword, newPassword } = parsed.data;
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { password: true },
+  });
+
+  if (!user) {
+    return {
+      success: false,
+      error: "User not found",
+    };
+  }
+
+  const valid = await verifyPassword(currentPassword, user.password);
+  if (!valid) {
+    return {
+      success: false,
+      error: "Current password is incorrect",
+      field: "currentPassword",
+    };
+  }
+
+  const hashed = await hashPassword(newPassword);
+
+  await db.$transaction([
+    db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashed,
+      },
+    }),
+    db.session.deleteMany({
+      where: {
+        userId,
+      },
+    }),
+  ]);
+
+  revalidatePath("/settings");
+  return {
+    success: true,
+    message: "Password changed. Other devices has been signed out.",
+  };
+}
+
+
