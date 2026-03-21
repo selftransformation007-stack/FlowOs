@@ -43,7 +43,6 @@ export default function LoginPage() {
     startTransition(async () => {
       await loginAction(values)
         .then((res) => {
-          console.log("res", res);
           if (res.success === false) {
             toast.error(res.error || "Something went wrong");
             return;
@@ -54,7 +53,6 @@ export default function LoginPage() {
         })
         .catch((error) => {
           toast.error(error.message || "Something went wrong");
-          console.log("Error in login form submit", error);
         });
     });
   };

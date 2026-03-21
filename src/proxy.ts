@@ -13,8 +13,6 @@ const PUBLIC_ROUTES = new Set([
 export default auth((req) => {
   const { pathname } = req.nextUrl;
 
-  console.log("session", req.auth)
-
   const session = req.auth;
   const isAuthed = !!session?.user?.id;
   const onboarded = session?.user?.onboardingDone ?? false;

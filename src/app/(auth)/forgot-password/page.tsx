@@ -36,9 +36,7 @@ export default function ForgotPasswordForm() {
   });
 
   async function onSubmit(data: ForgotPasswordInput) {
-    // Server action always returns success — never reveals whether email exists
     await forgotPasswordAction(data).then((response) => {
-      console.log("response", response);
       if (response.success === false) {
         toast.success(response.error);
         return;
