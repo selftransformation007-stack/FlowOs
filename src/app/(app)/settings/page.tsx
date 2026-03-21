@@ -1,4 +1,4 @@
-import React from "react";
+"use client"
 import {
   User,
   Palette,
@@ -13,6 +13,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { logoutAction } from "@/actions/auth.actions";
+import { useRouter } from "next/navigation";
 
 const settingsNav = [
   { id: "profile", label: "Profile", icon: User },
@@ -24,6 +26,15 @@ const settingsNav = [
 ];
 
 export default function SettingsPage() {
+
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await logoutAction().then((response) => {
+      router.push('/login')
+    })
+  }
+
   return (
     <div className="flex gap-12 h-full max-w-6xl mx-auto">
       {/* Settings Nav */}
@@ -44,7 +55,7 @@ export default function SettingsPage() {
           </button>
         ))}
         <div className="pt-8 mt-8 border-t border-white/[0.07] space-y-1">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-10 text-[14px] font-medium text-text-3 hover:text-danger hover:bg-danger/5 transition-all">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-10 text-[14px] font-medium text-text-3 hover:text-danger hover:bg-danger/5 transition-all">
             <LogOut className="size-4" />
             Sign Out
           </button>

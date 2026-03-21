@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "@/src/app/globals.css";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "FlowOS",
@@ -16,19 +17,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-surface-0 text-text-2 font-body antialiased">
-        <Toaster
-          theme="dark"
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: "oklch(17% 0.032 260)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "oklch(95% 0.012 260)",
-              fontFamily: "DM Sans, sans-serif",
-            },
-          }}
-        />
-        {children}
+        <SessionProvider>
+
+          <Toaster
+            theme="dark"
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: "oklch(17% 0.032 260)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                color: "oklch(95% 0.012 260)",
+                fontFamily: "DM Sans, sans-serif",
+              },
+            }}
+          />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
