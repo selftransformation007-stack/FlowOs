@@ -211,6 +211,7 @@ export async function getActiveHabits() {
             targetPerDay: true,
             reminderEnabled: true,
             reminderTime: true,
+            notes: true,
             goalId: true,
             sortOrder: true,
             createdAt: true,
