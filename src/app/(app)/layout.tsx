@@ -83,24 +83,26 @@ export default function AppLayout({
   return (
     <div className="flex h-screen w-full bg-surface-0 overflow-hidden">
       <Sidebar onOpenShortcuts={() => setIsShortcutsOpen(true)} />
-      <MobileNav />
-      <QuickAddTaskModal open={isQuickAddOpen} onOpenChange={setIsQuickAddOpen} />
-      <NotificationCenterDrawer open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen} />
-      <KeyboardShortcutsModal open={isShortcutsOpen} onOpenChange={setIsShortcutsOpen} />
       
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <Topbar 
           title={title} 
           onOpenNotifications={() => setIsNotificationsOpen(true)} 
           onOpenShortcuts={() => setIsShortcutsOpen(true)}
         />
         
-        <main className="flex-1 overflow-y-auto p-8 animate-fade-in">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 relative scrollbar-hide">
+          <div className="max-w-[1280px] mx-auto w-full">
             {children}
           </div>
         </main>
+
+        <MobileNav />
       </div>
+
+      <QuickAddTaskModal open={isQuickAddOpen} onOpenChange={setIsQuickAddOpen} />
+      <NotificationCenterDrawer open={isNotificationsOpen} onOpenChange={setIsQuickAddOpen} />
+      <KeyboardShortcutsModal open={isShortcutsOpen} onOpenChange={setIsShortcutsOpen} />
     </div>
   );
 }

@@ -38,121 +38,109 @@ export const AddPlannerBlockModal: React.FC<AddPlannerBlockModalProps> = ({ open
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[440px]">
-        <DialogHeader>
-          <DialogTitle>Add time block</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-6 py-4">
-          <div>
-            <label className="flowos-label mb-1.5 block">Block Title</label>
-            <input 
-              autoFocus
-              type="text" 
-              placeholder="What are you scheduling?" 
-              className="flowos-shadcn-input"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+      <DialogContent className="max-w-[480px] p-0 overflow-hidden border-white/[0.07] bg-surface-1 shadow-2xl">
+        <div className="px-8 pt-8 pb-4 space-y-8">
+           <div className="space-y-4">
+             <div className="flex items-center gap-3">
+                <div className="size-2 rounded-full bg-brand shadow-[0_0_8px_var(--color-brand)] animate-pulse" />
+                <span className="text-[10px] font-black text-text-4 tracking-widest uppercase italic opacity-60">Temporal Allocation</span>
+             </div>
+             <input 
+                autoFocus
+                type="text" 
+                placeholder="LABEL TIME BLOCK..." 
+                className="w-full bg-transparent border-none outline-none text-[24px] font-display font-black text-white placeholder:text-text-4 tracking-tight uppercase italic"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
           </div>
 
           <div>
-            <label className="flowos-label mb-3 block">Block Type</label>
-            <div className="flex gap-2">
+            <label className="label-section mb-4">Module Classification</label>
+            <div className="grid grid-cols-5 gap-3">
               {blockTypes.map(bt => (
                 <button 
                   key={bt.id}
                   onClick={() => setType(bt.id)}
                   className={cn(
-                    "flex-1 flex flex-col items-center justify-center gap-1.5 h-16 rounded-10 border transition-all",
-                    type === bt.id ? "bg-brand/15 border-brand/40 text-brand" : "bg-surface-3 border-white/[0.07] text-text-3 hover:text-text-2"
+                    "flex-1 flex flex-col items-center justify-center gap-2 h-20 rounded-2xl border transition-all group",
+                    type === bt.id ? "bg-brand/15 border-brand/40 text-brand" : "bg-surface-2 border-white/[0.04] text-text-4 hover:text-text-2 hover:bg-surface-3"
                   )}
                 >
-                  <bt.icon size={16} />
-                  <span className="text-[11px] font-bold uppercase tracking-wider">{bt.label}</span>
+                  <bt.icon size={18} className={cn("transition-transform", type === bt.id ? "scale-110" : "group-hover:scale-110")} />
+                  <span className="text-[9px] font-black uppercase tracking-[0.1em] italic">{bt.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="flowos-label">Start Time</label>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label className="label-section">Phase Start</label>
               <input 
                 type="time" 
-                className="flowos-shadcn-input"
+                className="w-full h-11 bg-surface-2 border border-white/[0.06] rounded-xl px-4 text-[14px] font-bold text-text-2 focus:outline-none focus:border-brand/40 transition-all appearance-none"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="flowos-label">End Time</label>
+            <div className="space-y-3">
+              <label className="label-section">Phase End</label>
               <input 
                 type="time" 
-                className="flowos-shadcn-input"
+                className="w-full h-11 bg-surface-2 border border-white/[0.06] rounded-xl px-4 text-[14px] font-bold text-text-2 focus:outline-none focus:border-brand/40 transition-all appearance-none"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="flowos-label">Date</label>
+          <div className="space-y-3">
+            <label className="label-section">Target Date</label>
             <Popover>
               <PopoverTrigger asChild>
                 <button className={cn(
-                  "flowos-shadcn-input flex items-center justify-start text-left font-normal",
+                  "flex h-11 w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-surface-2 px-4 text-[14px] font-bold text-text-2 outline-none hover:bg-surface-3 transition-all",
                   !date && "text-text-4"
                 )}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="size-4 text-text-4" />
                   {date ? format(date, "PPP") : <span>Select date</span>}
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
+                <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
               </PopoverContent>
             </Popover>
           </div>
 
-          {type === 'task' && (
-            <div className="space-y-1.5">
-              <label className="flowos-label">Link to Task</label>
+          {(type === 'task' || type === 'habit') && (
+            <div className="space-y-3">
+              <label className="label-section">Associated Record</label>
               <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Search tasks..." />
+                <SelectTrigger className="h-11 bg-surface-2 border-white/[0.04] rounded-xl outline-none">
+                  <SelectValue placeholder={type === 'task' ? "Inquire task database..." : "Select habitual cycle"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="t1">Design FlowOS Dashboard</SelectItem>
-                  <SelectItem value="t2">Review analytics report</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {type === 'habit' && (
-            <div className="space-y-1.5">
-              <label className="flowos-label">Link to Habit</label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a habit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="h1">Morning Meditation</SelectItem>
-                  <SelectItem value="h2">Read 20 Pages</SelectItem>
+                  {type === 'task' ? (
+                    <>
+                      <SelectItem value="t1"><span className="text-[14px] font-bold">Design FlowOS Dashboard</span></SelectItem>
+                      <SelectItem value="t2"><span className="text-[14px] font-bold">Review analytics report</span></SelectItem>
+                    </>
+                  ) : (
+                    <>
+                      <SelectItem value="h1"><span className="text-[14px] font-bold">Morning Meditation</span></SelectItem>
+                      <SelectItem value="h2"><span className="text-[14px] font-bold">Read 20 Pages</span></SelectItem>
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
           )}
         </div>
 
-        <DialogFooter>
-          <button onClick={() => onOpenChange(false)} className="flowos-shadcn-btn-secondary w-auto px-6">Cancel</button>
-          <button className="flowos-shadcn-btn-primary w-auto px-6">Save Block</button>
+        <DialogFooter className="bg-surface-2/40 px-8 py-5 mt-4 border-t border-white/[0.06] backdrop-blur-md">
+           <button onClick={() => onOpenChange(false)} className="btn-ghost">DISCARD</button>
+           <button className="btn-primary px-10">SYNCHRONIZE BLOCK</button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

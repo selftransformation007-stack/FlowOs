@@ -19,7 +19,7 @@ export const Topbar: React.FC<TopbarProps> = ({ title, onOpenNotifications, onOp
       </div>
 
       {/* Page title */}
-      <h1 className="flex-1 lg:flex-none text-center lg:text-left font-display text-[16px] lg:text-[17px] font-semibold text-text-1 truncate">
+      <h1 className="flex-1 lg:flex-none text-center lg:text-left font-display text-[12px] font-black text-text-1 truncate uppercase tracking-[0.2em] italic opacity-80">
         {title}
       </h1>
 

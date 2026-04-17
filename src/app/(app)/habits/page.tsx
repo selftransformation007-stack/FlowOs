@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Plus, Flame, MoreHorizontal, ChevronLeft, ChevronRight, Archive, Trash2, Pencil, CheckCircle2, Copy, RotateCcw } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import Link from 'next/link';
@@ -26,105 +27,113 @@ const HabitCard: React.FC<{ habit: any, onArchive: (habit: any) => void }> = ({ 
   const [isLogged, setIsLogged] = useState(habit.days[29]);
 
   return (
-    <div className="flowos-card group relative">
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center gap-3">
+    <motion.div 
+      whileHover={{ y: -4 }}
+      className="flowos-card group relative border border-white/[0.04] p-8"
+    >
+      <div className="flex items-start justify-between mb-8">
+        <div className="flex items-center gap-4">
           <div 
-            className="size-10 rounded-[12px] flex items-center justify-center text-xl shrink-0"
-            style={{ backgroundColor: `${habit.color}20`, border: `1px solid ${habit.color}40` }}
+            className="size-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-lg"
+            style={{ backgroundColor: `${habit.color}15`, border: `1px solid ${habit.color}30` }}
           >
             {habit.emoji}
           </div>
           <div>
-            <h3 className="font-display text-[16px] font-bold text-text-1 leading-tight group-hover:text-brand transition-colors">
-              <Link href={`/habits/${habit.id}`}>{habit.name}</Link>
+            <h3 className="font-display text-[18px] font-black text-white italic tracking-tight group-hover:text-brand transition-colors">
+              <Link href={`/habits/${habit.id}`}>{habit.name.toUpperCase()}</Link>
             </h3>
-            <span className="flowos-badge mt-1">{habit.category}</span>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="size-1.5 rounded-full" style={{ backgroundColor: habit.color }} />
+              <span className="text-[10px] font-black text-text-4 tracking-widest uppercase opacity-60 font-mono">{habit.category}</span>
+            </div>
           </div>
         </div>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="size-8 rounded-full flex items-center justify-center text-text-4 hover:text-text-2 hover:bg-white/5 transition-all">
+            <button className="btn-icon size-9 border-white/[0.05]">
               <MoreHorizontal className="size-4" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[180px]">
-            <DropdownMenuItem className="gap-2">
-              <Pencil size={14} />
-              Edit Habit
+          <DropdownMenuContent align="end" className="w-[200px] bg-surface-2 border-white/[0.08] p-1.5">
+            <DropdownMenuItem className="gap-3 py-2.5 rounded-lg text-[12px] font-bold">
+              <Pencil size={14} className="text-text-4" />
+              CALIBRATE PROTOCOL
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2">
-              <Copy size={14} />
-              Duplicate
+            <DropdownMenuItem className="gap-3 py-2.5 rounded-lg text-[12px] font-bold">
+              <Copy size={14} className="text-text-4" />
+              DUPLICATE TRACE
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-white/[0.04]" />
             <DropdownMenuItem 
-              className="gap-2 text-warning focus:text-warning"
+              className="gap-3 py-2.5 rounded-lg text-[12px] font-bold text-warning focus:text-warning"
               onClick={() => onArchive(habit)}
             >
               <Archive size={14} />
-              Archive
+              ARCHIVE MODULE
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 text-danger focus:text-danger">
+            <DropdownMenuItem className="gap-3 py-2.5 rounded-lg text-[12px] font-bold text-danger focus:text-danger">
               <Trash2 size={14} />
-              Delete
+              TERMINATE
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {/* Heatmap Grid */}
-      <div className="grid grid-cols-6 gap-1.5 mb-6">
+      {/* Heatmap Matrix */}
+      <div className="flex flex-wrap gap-1.5 mb-8">
         {habit.days.slice(0, 30).map((done, i) => (
           <div 
             key={i}
             className={cn(
-              "aspect-square rounded-[3px] transition-all duration-300",
-              done ? "bg-brand" : "bg-surface-3",
-              i === 29 && !done && "border border-brand/50" // Today
+               "size-2.5 rounded-[2px] transition-all duration-500",
+               done ? "bg-brand shadow-[0_0_8px_var(--color-brand)]" : "bg-white/[0.05]",
+               i === 29 && !done && "ring-1 ring-brand ring-offset-2 ring-offset-surface-1" 
             )}
-            style={done ? { backgroundColor: habit.color } : {}}
+            style={done ? { backgroundColor: habit.color, boxShadow: `0 0 10px ${habit.color}40` } : {}}
           />
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-white/[0.05] gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <Flame className="size-3.5 text-warning" />
-            <span className="text-[13px] font-bold text-text-1">{habit.streak}d</span>
+      <div className="flex items-center justify-between pt-6 border-t border-white/[0.05] gap-4">
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-text-4 tracking-widest uppercase opacity-60">Streak</span>
+            <span className="text-[15px] font-black text-white italic">{habit.streak}D</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[13px] font-bold text-text-1">{habit.rate}%</span>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-text-4 tracking-widest uppercase opacity-60">Rate</span>
+            <span className="text-[15px] font-black text-white italic">{habit.rate}%</span>
           </div>
         </div>
 
         <button 
           onClick={() => setIsLogged(!isLogged)}
           className={cn(
-            "flex-1 h-9 rounded-10 text-[12px] font-bold transition-all flex items-center justify-center gap-2",
+            "flex-1 h-11 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all flex items-center justify-center gap-2.5",
             isLogged 
-              ? "bg-brand/10 text-brand border border-brand/20 hover:bg-brand/20" 
-              : "bg-brand text-white shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98]"
+              ? "bg-brand-dim/20 text-brand border border-brand/20 hover:bg-brand/30" 
+              : "btn-primary shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-[0.98]"
           )}
         >
           {isLogged ? (
             <>
-              <CheckCircle2 className="size-4" />
-              Logged
+              <CheckCircle2 size={16} strokeWidth={3} />
+              SYNCHRONIZED
             </>
           ) : (
             <>
-              <Plus className="size-4" />
-              Log Progress
+              <Plus size={16} strokeWidth={3} />
+              LOG CYCLE
             </>
           )}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
 
 export default function HabitsPage() {
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -139,76 +148,83 @@ export default function HabitsPage() {
 
   const confirmArchive = () => {
     console.log('Archiving habit:', selectedHabit?.name);
-    // Logic to archive habit would go here
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <NewHabitModal open={isNewModalOpen} onOpenChange={setIsNewModalOpen} />
       <ArchivedHabitsDrawer open={isArchiveDrawerOpen} onOpenChange={setIsArchiveDrawerOpen} />
       <ConfirmDialog 
         open={isConfirmArchiveOpen}
         onOpenChange={setIsConfirmArchiveOpen}
-        title="Archive Habit?"
-        description={`Are you sure you want to archive "${selectedHabit?.name}"? It will be hidden from your active list but you can restore it later.`}
-        confirmText="Archive"
+        title="ARCHIVE PROTOCOL?"
+        description={`Initialize archival sequence for "${selectedHabit?.name}"? Data remains in telemetry history.`}
+        confirmText="ARCHIVE"
         onConfirm={confirmArchive}
         variant="primary"
       />
 
-      {/* Header */}
-      <div className="flex items-end justify-between">
-        <div className="space-y-1">
-          <p className="text-[12px] font-medium uppercase tracking-[1px] text-brand-light">
-            Habit Tracker
-          </p>
-          <h1 className="font-display text-[36px] font-bold leading-tight tracking-[-1px] text-text-1">
-            Habits
-          </h1>
+      {/* Immersive Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flowos-card relative overflow-hidden bg-brand-dim/5 border-brand/10"
+      >
+        <div className="absolute top-0 right-0 p-12 opacity-10 blur-2xl pointer-events-none">
+           <RotateCcw size={160} className="text-brand rotate-12" />
         </div>
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsArchiveDrawerOpen(true)}
-            className="flowos-shadcn-btn-secondary size-11 p-0 flex items-center justify-center"
-            title="Archived Habits"
-          >
-            <Archive className="size-5" />
-          </button>
-          <button 
-            onClick={() => setIsNewModalOpen(true)}
-            className="flowos-shadcn-btn-primary w-auto px-6"
-          >
-            <Plus className="size-4 mr-2" />
-            New Habit
-          </button>
-        </div>
-      </div>
+        
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
+          <div className="space-y-4">
+             <div className="flex items-center gap-3">
+                <div className="size-2 rounded-full bg-brand animate-pulse" />
+                <span className="text-[10px] font-black text-text-4 tracking-widest uppercase italic opacity-60">Routine Synchronization Engine</span>
+             </div>
+             <h1 className="font-display text-[42px] font-black tracking-tighter text-white italic leading-none">
+                HABITUAL <span className="text-gradient">CYCLES</span>
+             </h1>
+             <p className="text-[14px] text-text-4 font-medium max-w-[420px] leading-relaxed">
+                Synchronization with biological routines is critical. Consistency is the primary driver of neuro-plastic evolution.
+             </p>
+          </div>
 
-      {/* Streak Bar */}
-      <div className="flowos-card p-4">
-        <div className="flex items-center justify-between mb-4 px-2">
-          <span className="flowos-label">Last 30 Days Activity</span>
-          <div className="flex gap-2">
-            <button className="size-7 rounded-full bg-surface-3 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors">
-              <ChevronLeft className="size-4" />
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsArchiveDrawerOpen(true)}
+              className="btn-secondary h-14 px-6 rounded-2xl"
+              title="Archived Habits"
+            >
+              <Archive size={20} className="text-text-2" />
             </button>
-            <button className="size-7 rounded-full bg-surface-3 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors">
-              <ChevronRight className="size-4" />
+            <button 
+              onClick={() => setIsNewModalOpen(true)}
+              className="btn-primary h-14 px-8 rounded-2xl shadow-xl shadow-brand/20"
+            >
+              <Plus size={20} strokeWidth={3} />
+              <span>NEW PROTOCOL</span>
             </button>
           </div>
         </div>
-        <div className="flex justify-between gap-1 px-2">
+      </motion.div>
+
+      {/* Pulse Visualization */}
+      <div className="flowos-card relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-6">
+           <span className="text-[10px] font-black text-white/20 tracking-[0.2em] uppercase italic">30D Pulse History</span>
+        </div>
+        <div className="grid grid-cols-30 gap-1.5 h-16 items-end">
           {Array(30).fill(0).map((_, i) => {
             const filled = Math.random() > 0.3;
-            const partial = !filled && Math.random() > 0.5;
+            const h = filled ? (40 + Math.random() * 60) : 10;
             return (
-              <div 
+              <motion.div 
+                initial={{ height: 0 }}
+                animate={{ height: `${h}%` }}
                 key={i} 
                 className={cn(
-                  "flex-1 h-2.5 rounded-full transition-all duration-500",
-                  filled ? "bg-brand shadow-[0_0_8px_rgba(85,110,255,0.3)]" : 
-                  partial ? "bg-brand/30" : "bg-white/5",
-                  i === 29 && "ring-2 ring-brand/50 ring-offset-2 ring-offset-surface-2"
+                  "flex-1 rounded-full transition-all duration-500",
+                  filled ? "bg-brand shadow-[0_0_12px_var(--color-brand)] opacity-80" : "bg-white/5",
+                  i === 29 && "ring-2 ring-brand ring-offset-4 ring-offset-surface-1"
                 )} 
               />
             );
@@ -217,25 +233,28 @@ export default function HabitsPage() {
       </div>
 
       {/* Habit Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {mockHabits.map(habit => (
           <HabitCard key={habit.id} habit={habit} onArchive={handleArchiveClick} />
         ))}
         
         {/* Add New Placeholder */}
-        <button 
+        <motion.button 
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
           onClick={() => setIsNewModalOpen(true)}
-          className="flowos-card border-dashed border-white/10 bg-transparent flex flex-col items-center justify-center gap-3 py-12 hover:border-brand/40 hover:bg-brand/5 transition-all group"
+          className="flowos-card border-dashed border-white/[0.08] bg-transparent flex flex-col items-center justify-center gap-6 py-20 hover:border-brand/40 hover:bg-brand/5 group transition-all"
         >
-          <div className="size-12 rounded-full bg-surface-3 flex items-center justify-center group-hover:bg-brand/10 transition-colors">
-            <Plus className="size-6 text-text-4 group-hover:text-brand transition-colors" />
+          <div className="size-16 rounded-2xl bg-surface-3 flex items-center justify-center border border-white/[0.03] group-hover:bg-brand/10 group-hover:border-brand/30 transition-all">
+            <Plus size={24} className="text-text-4 group-hover:text-brand transition-colors" />
           </div>
-          <div className="text-center">
-            <p className="text-[14px] font-bold text-text-2 group-hover:text-text-1">Create new habit</p>
-            <p className="text-[12px] text-text-4">Build a new routine today</p>
+          <div className="space-y-1">
+            <p className="font-display text-[16px] font-black text-text-2 group-hover:text-text-1 uppercase italic tracking-tight">INITIALIZE NEW HABIT</p>
+            <p className="text-[11px] font-bold text-text-4 tracking-widest uppercase opacity-40">System Expansion Point</p>
           </div>
-        </button>
+        </motion.button>
       </div>
     </div>
   );
-};
+}
+

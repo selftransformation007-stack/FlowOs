@@ -36,31 +36,35 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ open, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[440px] p-0 overflow-hidden border-white/[0.07] bg-surface-1">
-        <DialogHeader className="px-6 pt-6 pb-0">
-          <DialogTitle className="text-[18px] font-display font-bold text-text-1">Create Project</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-[440px] p-0 overflow-hidden border-white/[0.07] bg-surface-1 shadow-2xl">
+        <div className="px-8 pt-8 pb-4 space-y-8">
+          <div className="space-y-4">
+             <div className="flex items-center gap-3">
+                <div className="size-2 rounded-full bg-brand shadow-[0_0_8px_var(--color-brand)] animate-pulse" />
+                <span className="text-[10px] font-black text-text-4 tracking-widest uppercase italic opacity-60">System Registry</span>
+             </div>
+             <h2 className="font-display font-black text-[24px] tracking-tighter text-white italic leading-none uppercase">Initialize Project</h2>
+          </div>
 
-        <div className="px-6 py-8 space-y-8">
           <div className="flex items-start gap-6">
             <div 
-              className="size-16 rounded-2xl flex items-center justify-center text-2xl shrink-0 border border-white/10 shadow-lg transition-all duration-300"
+              className="size-16 rounded-2xl flex items-center justify-center text-2xl shrink-0 border border-white/10 shadow-lg transition-all duration-500"
               style={{ 
                 backgroundColor: `${selectedColor}15`, 
                 color: selectedColor,
                 boxShadow: `0 8px 20px -4px ${selectedColor}30`
               }}
             >
-              <FolderOpen size={32} />
+              <FolderOpen size={30} strokeWidth={2.5} />
             </div>
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Project Name</label>
+                <label className="label-section">Designation</label>
                 <input 
                   autoFocus
                   type="text" 
-                  placeholder="e.g. Work, Personal, Side Project" 
-                  className="w-full bg-transparent border-none outline-none text-[20px] font-display font-bold text-text-1 placeholder:text-text-4 tracking-tight"
+                  placeholder="PROJECT NAME" 
+                  className="w-full bg-transparent border-none outline-none text-[22px] font-display font-black text-white placeholder:text-text-4 tracking-tight uppercase italic"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -69,7 +73,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ open, onOpenCh
           </div>
 
           <div className="space-y-4">
-            <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Theme Color</label>
+            <label className="label-section">Chroma (Accent)</label>
             <div className="grid grid-cols-5 gap-3">
               {colors.map(c => (
                 <button 
@@ -77,7 +81,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ open, onOpenCh
                   onClick={() => setSelectedColor(c)}
                   className={cn(
                     "h-8 rounded-lg transition-all relative group",
-                    selectedColor === c ? "ring-2 ring-white ring-offset-4 ring-offset-surface-1 scale-105" : "hover:scale-110 opacity-60 hover:opacity-100"
+                    selectedColor === c ? "ring-2 ring-white ring-offset-4 ring-offset-surface-1 scale-110" : "hover:scale-110 opacity-60 hover:opacity-100"
                   )}
                   style={{ backgroundColor: c }}
                 >
@@ -91,26 +95,26 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ open, onOpenCh
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Description</label>
+          <div className="space-y-3">
+            <label className="label-section">Mission Parameters</label>
             <textarea 
-              placeholder="What is this project about?" 
-              className="w-full bg-surface-2 border border-white/[0.07] rounded-14 p-4 text-[14px] text-text-2 placeholder:text-text-4 resize-none min-h-[100px] focus:ring-1 focus:ring-brand outline-none transition-all"
+              placeholder="What is the objective of this project?" 
+              className="w-full bg-surface-2 border border-white/[0.07] rounded-2xl p-4 text-[14px] text-text-2 placeholder:text-text-4 placeholder:italic resize-none min-h-[100px] focus:outline-none focus:border-brand/40 transition-all leading-relaxed"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
         </div>
 
-        <DialogFooter className="bg-surface-2/50 px-6 py-4 mt-0 border-t border-white/[0.07]">
+        <DialogFooter className="bg-surface-2/40 px-8 py-5 mt-4 border-t border-white/[0.06] backdrop-blur-md">
           <button 
             onClick={() => onOpenChange(false)} 
-            className="h-10 px-6 rounded-10 text-[13px] font-bold text-text-3 hover:text-text-1 hover:bg-white/5 transition-all"
+            className="btn-ghost"
           >
-            Cancel
+            DISCARD
           </button>
-          <button className="flowos-shadcn-btn-primary h-10 px-8 w-auto">
-            Create Project
+          <button className="btn-primary px-10">
+            CREATE PROJECT
           </button>
         </DialogFooter>
       </DialogContent>

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/Popover';
 import { Calendar } from '@/src/components/ui/Calendar';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Flag, FolderOpen, Clock, Tag, User } from 'lucide-react';
+import { Calendar as CalendarIcon, Flag, FolderOpen, Clock, Tag, User, Inbox, Layers } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
 interface NewTaskModalProps {
@@ -30,136 +30,121 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ open, onOpenChange }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[560px] p-0 overflow-hidden border-white/[0.07] bg-surface-1">
-        <DialogHeader className="px-6 pt-6 pb-0">
-          <DialogTitle className="text-[20px] font-display font-bold text-text-1">New Task</DialogTitle>
-        </DialogHeader>
-
-        <div className="px-6 py-6 space-y-8">
+      <DialogContent className="max-w-[600px] p-0 overflow-hidden border-white/[0.07] bg-surface-1 shadow-2xl">
+        <div className="px-8 pt-8 pb-4 space-y-6">
           {/* Main Input Section */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <input 
               autoFocus
               type="text" 
-              placeholder="What needs to be done?" 
-              className="w-full bg-transparent border-none outline-none text-[22px] font-display font-bold text-text-1 placeholder:text-text-4 tracking-tight"
+              placeholder="What's the protocol?" 
+              className="w-full bg-transparent border-none outline-none text-[28px] font-display font-black text-white placeholder:text-text-4 tracking-tight"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <textarea 
-              placeholder="Add details, links, or context..." 
-              className="w-full bg-transparent border-none outline-none text-[14px] text-text-2 placeholder:text-text-4 resize-none min-h-[60px] leading-relaxed"
+              placeholder="Context, references, or instructions..." 
+              className="w-full bg-transparent border-none outline-none text-[15px] text-text-3 font-medium placeholder:text-text-4 resize-none min-h-[80px] leading-relaxed"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
-          {/* Metadata Grid */}
-          <div className="grid grid-cols-2 gap-x-10 gap-y-6 pt-6 border-t border-white/[0.05]">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Project</label>
+          <div className="divider opacity-30" />
+
+          {/* Metadata Matrix */}
+          <div className="grid grid-cols-2 gap-x-12 gap-y-8 py-2">
+            <div className="space-y-3">
+              <label className="label-section px-1">Allocation (Project)</label>
               <Select value={project} onValueChange={setProject}>
-                <SelectTrigger className="h-10 bg-surface-2 border-white/[0.07] hover:bg-surface-3 transition-colors">
+                <SelectTrigger className="h-11 bg-surface-2 border-white/[0.04] hover:bg-surface-3 transition-all rounded-xl">
                   <SelectValue placeholder="Inbox" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="inbox">
-                    <div className="flex items-center gap-2.5">
-                      <FolderOpen size={14} className="text-brand" /> 
-                      <span className="text-[13px] font-medium">Inbox</span>
+                    <div className="flex items-center gap-3">
+                      <Inbox size={14} className="text-brand" /> 
+                      <span className="text-[14px] font-bold">Inbox</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="work">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <div className="size-2 rounded-full bg-danger" /> 
-                      <span className="text-[13px] font-medium">Work Project</span>
+                      <span className="text-[14px] font-bold">Work Project</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="personal">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <div className="size-2 rounded-full bg-success" /> 
-                      <span className="text-[13px] font-medium">Personal</span>
+                      <span className="text-[14px] font-bold">Personal</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Priority</label>
+            <div className="space-y-3">
+              <label className="label-section px-1">Criticality (Priority)</label>
               <Select value={priority} onValueChange={setPriority}>
-                <SelectTrigger className="h-10 bg-surface-2 border-white/[0.07] hover:bg-surface-3 transition-colors">
+                <SelectTrigger className="h-11 bg-surface-2 border-white/[0.04] hover:bg-surface-3 transition-all rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="p1"><div className="flex items-center gap-2.5"><div className="size-2 rounded-full bg-danger" /> <span className="text-[13px] font-medium">P1 — Urgent</span></div></SelectItem>
-                  <SelectItem value="p2"><div className="flex items-center gap-2.5"><div className="size-2 rounded-full bg-warning" /> <span className="text-[13px] font-medium">P2 — High</span></div></SelectItem>
-                  <SelectItem value="p3"><div className="flex items-center gap-2.5"><div className="size-2 rounded-full bg-brand" /> <span className="text-[13px] font-medium">P3 — Medium</span></div></SelectItem>
-                  <SelectItem value="none"><div className="flex items-center gap-2.5"><span className="text-[13px] font-medium">None</span></div></SelectItem>
+                  <SelectItem value="p1"><div className="flex items-center gap-3"><div className="size-2.5 rounded-full bg-danger" /> <span className="text-[14px] font-bold">P1 — URGENT</span></div></SelectItem>
+                  <SelectItem value="p2"><div className="flex items-center gap-3"><div className="size-2.5 rounded-full bg-warning" /> <span className="text-[14px] font-bold">P2 — HIGH</span></div></SelectItem>
+                  <SelectItem value="p3"><div className="flex items-center gap-3"><div className="size-2.5 rounded-full bg-brand" /> <span className="text-[14px] font-bold">P3 — NORMAL</span></div></SelectItem>
+                  <SelectItem value="none"><div className="flex items-center gap-3"><span className="text-[14px] font-bold text-text-4">NONE</span></div></SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Due Date</label>
+            <div className="space-y-3">
+              <label className="label-section px-1">Temporal Deadline</label>
               <Popover>
                 <PopoverTrigger asChild>
                   <button className={cn(
-                    "flex h-10 w-full items-center gap-2.5 rounded-10 border border-white/[0.07] bg-surface-2 px-3 py-2 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-3 outline-none focus:ring-1 focus:ring-brand",
+                    "flex h-11 w-full items-center gap-3 rounded-xl border border-white/[0.04] bg-surface-2 px-4 text-[14px] font-bold text-text-2 transition-all hover:bg-surface-3 outline-none group",
                     !date && "text-text-4"
                   )}>
-                    <CalendarIcon size={14} className="text-text-4" />
-                    {date ? format(date, "PPP") : <span>No due date</span>}
+                    <CalendarIcon size={14} className="text-text-4 group-hover:text-brand transition-colors" />
+                    {date ? format(date, "PPP") : <span>No deadline set</span>}
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                  />
+                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
                 </PopoverContent>
               </Popover>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Estimate</label>
+            <div className="space-y-3">
+              <label className="label-section px-1">Effort Estimate</label>
               <Select value={estimate} onValueChange={setEstimate}>
-                <SelectTrigger className="h-10 bg-surface-2 border-white/[0.07] hover:bg-surface-3 transition-colors">
-                  <SelectValue placeholder="No estimate" />
+                <SelectTrigger className="h-11 bg-surface-2 border-white/[0.04] hover:bg-surface-3 transition-all rounded-xl">
+                  <SelectValue placeholder="Unestimated" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['15m', '30m', '1h', '2h', '4h', '1 day', '2 days'].map(e => (
-                    <SelectItem key={e} value={e}><span className="text-[13px] font-medium">{e}</span></SelectItem>
+                  {['15m', '30m', '1h', '2h', '4h', '1d'].map(e => (
+                    <SelectItem key={e} value={e}><span className="text-[14px] font-bold">{e}</span></SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-[1.5px] text-text-4">Labels</label>
-            <button className="flex items-center gap-2.5 w-full h-10 bg-surface-2 border border-white/[0.07] rounded-10 px-3 hover:bg-surface-3 transition-colors text-text-4 group">
-              <Tag size={14} className="group-hover:text-text-2 transition-colors" />
-              <span className="text-[13px] font-medium group-hover:text-text-2 transition-colors">Add labels...</span>
-            </button>
-          </div>
         </div>
 
-        <DialogFooter className="bg-surface-2/50 px-6 py-4 mt-0 border-t border-white/[0.07]">
-          <div className="flex-1 hidden sm:flex items-center text-[11px] font-medium text-text-4 uppercase tracking-wider">
-            ⌘ + Enter to save
+        <DialogFooter className="bg-surface-2/40 px-8 py-5 mt-4 border-t border-white/[0.06] backdrop-blur-md">
+          <div className="flex-1 hidden sm:flex items-center text-[10px] font-bold text-text-4 uppercase tracking-[0.2em] opacity-40">
+            ENTER TO SYNCHRONIZE
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             <button 
               onClick={() => onOpenChange(false)} 
-              className="flex-1 sm:flex-none h-10 px-6 rounded-10 text-[13px] font-bold text-text-3 hover:text-text-1 hover:bg-white/5 transition-all"
+              className="btn-ghost"
             >
-              Cancel
+              DISCARD
             </button>
-            <button className="flex-1 sm:flex-none flowos-shadcn-btn-primary h-10 px-8 w-auto">
-              Create Task
+            <button className="btn-primary px-10">
+              CREATE PROTOCOL
             </button>
           </div>
         </DialogFooter>
@@ -167,3 +152,4 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({ open, onOpenChange }
     </Dialog>
   );
 };
+
